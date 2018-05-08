@@ -1,0 +1,5 @@
+*.webm
+.ipynb_checkpoints
+frames
+encoded_frames
+decoded_frames
