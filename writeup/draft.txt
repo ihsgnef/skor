@@ -1,3 +1,12 @@
+Todo
+[ ] mapping from parameter to max size message
+[ ] packetize
+[ ] new git repo
+[ ] reasonable frame size and area size 240 360
+[ ] current throughput: 
+
+
+
 Intro
 
 Skor is a tool for circumventing internet cencorship. The goal is to
