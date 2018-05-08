@@ -1,0 +1,52 @@
+Intro
+
+Skor is a tool for circumventing internet cencorship. The goal is to
+embed data in video conferencing services that are secure and not yet
+blocked by the cencorship. The goal is to achieve high throughput,
+compared to previous methods that embed data in the audio channel.
+Skor uses Spinal Code for error correction.
+
+[Show archetecture of Skor]
+
+Problem
+
+In this project, we focus on the development and evaluation of
+alternative frame mappers.
+
+The current bottlenet of the throughput is at the frame mapper. There
+are two challenges:
+- the embedding needs to be robust to video coding.
+- the video packets should not look too different from regular video
+  calls from metadata.
+
+Simplifying assumptions:
+- output of spinal code is random
+- app data and control data can be treated as independent
+- error in data due to video coding and transmission loss affect the
+  spinal code equivalently. that is, higher frame mapper throughput
+  should translate into higher end-to-end throughput
+
+
+
+Analysis and Simulation
+
+In this section, we analyze the factors of the end-to-end performance,
+and propose a simulation environment and corresponding metrics for
+evaluating the frame mapper independent of the rest of the pipeline.
+
+- video encoder / decoder
+- transmission loss
+
+Metrics
+
+Methods
+
+- QR code
+    - parameters and capacity
+    - RGB performance
+    - YUV performance
+- Color Block
+
+Experiments
+
+Conclusion
