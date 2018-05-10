@@ -4,11 +4,9 @@ import time
 import numpy as np
 import subprocess
 from PIL import Image
-from tqdm import tqdm
 from multiprocessing import Pool, Manager
 from functools import partial
 from abc import ABCMeta, abstractmethod
-import math
 from random import random
 
 import pyqrcode
@@ -113,9 +111,9 @@ class QR_RGB_1(Embedding):
             return data[0].data.decode("utf-8")
 
     def average_blocks(self, frame):
-        ''' take a frame and map each block to one color according to the average.
-        this is an in place function. The qr is assumed to be starting at the top
-        right of the frame.
+        ''' take a frame and map each block to one color according to
+        the average.  this is an in place function. The qr is assumed
+        to be starting at the top right of the frame.
 
         Args:
             frame: PIL image object
@@ -132,15 +130,13 @@ class QR_RGB_1(Embedding):
         else:
             raise ValueError("qr not square")
 
-        x_px = 0
-        y_px = 0
         for x in range(side_len_blocks):
             for y in range(side_len_blocks):
-                #get block average
+                # get block average
                 sum = 0
                 for i in range(x * block_size_px, (x+1) * block_size_px):
                     for j in range(y * block_size_px, (y+1) * block_size_px):
-                        temp_px = frame.getpixel((i,j));
+                        temp_px = frame.getpixel((i, j))
                         sum += (temp_px[0] + temp_px[1] + temp_px[2])/3
                 avg = sum / (block_size_px**2)
                 if avg > 127.5:
@@ -148,10 +144,10 @@ class QR_RGB_1(Embedding):
                 else:
                     avg = 0
 
-                #set each block
+                # set each block
                 for i in range(x * block_size_px, (x+1) * block_size_px):
                     for j in range(y * block_size_px, (y+1) * block_size_px):
-                        frame.putpixel((i,j),(avg,avg,avg))
+                        frame.putpixel((i, j), (avg, avg, avg))
 
         if random() < 0.1:
             frame.show()
@@ -168,8 +164,8 @@ class QR_RGB_3(Embedding):
 
     def encode(self, frame, m):
         # encode message in rgb channels separately
-        l = (len(m) + 3) // 3
-        ms = [m[i * l: i * l + l] for i in range(3)]
+        ml = (len(m) + 3) // 3
+        ms = [m[i * ml: i * ml + ml] for i in range(3)]
         assert len(ms) == 3
         qr_rgb = [get_qr_array(m, self.qr_params) for m in ms]
         qr_rgb = np.stack(qr_rgb, axis=2)
@@ -264,7 +260,6 @@ def encode_all(mapper, input_dir, output_dir):
     fnames = [x for x in fnames if x.endswith('.png')]
     inputs = [os.path.join(input_dir, x) for x in fnames]
     outputs = [os.path.join(output_dir, x) for x in fnames]
-    pool = Pool()
     worker = partial(_encode_one, mapper)
     inputs = list(zip(inputs, outputs))
     ms = _multiprocess(worker, inputs, info='encoding frames')
@@ -283,7 +278,6 @@ def _decode_one(mapper, inputs):
 def decode_all(mapper, input_dir):
     fnames = sorted(os.listdir(input_dir))
     fnames = [x for x in fnames if x.endswith('.png')]
-    pool = Pool()
     worker = partial(_decode_one, mapper)
     inputs = [os.path.join(input_dir, f) for f in fnames]
     ms = _multiprocess(worker, inputs, info='decoding frames')
@@ -313,16 +307,15 @@ def main():
         os.makedirs(frames_dir)
         print('generating initial frames')
         subprocess.call([
-            'ffmpeg', '-i', 
-            'rms.webm', 
+            'ffmpeg', '-i',
+            'rms.webm',
             '-vf', 'scale=800:600',
             os.path.join(frames_dir, 'image-%04d.png')
             ])
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
 
-    mapper = QR_RGB_1(qr_size=(435,435), version=30)
-
+    mapper = QR_RGB_1(qr_size=(435, 435), version=20)
     ms0 = encode_all(mapper, frames_dir, encoded_dir)
 
     print('ffmpeg encoding')
