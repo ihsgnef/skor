@@ -57,5 +57,18 @@ Methods
 - Color Block
 
 Experiments
+1. test bed
+  skype-skype(screensharing)
+  packet size distribution
+    original vs embedded w/alpha(opaque) vs embedded w/ ground truth
+  packet loss
+2. QR
+  size(version/qr pixel size)
+  depth - number of bits encode in one character/buckets 
+  channel (black and white, r/g/b)
+  colorspace(YUV, RGBA)
+  VP8-bitrate
+ 
+
 
 Conclusion
