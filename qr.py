@@ -8,6 +8,8 @@ from tqdm import tqdm
 from multiprocessing import Pool, Manager
 from functools import partial
 from abc import ABCMeta, abstractmethod
+import math
+from random import random
 
 import pyqrcode
 from pyzbar.pyzbar import decode
@@ -26,7 +28,7 @@ class Embedding(metaclass=ABCMeta):
     '''A embedding supports encoding and decoding data into and from a
     frame.
     '''
-    
+
     @abstractmethod
     def encode(frame, m, *args, **kwargs):
         '''Encode given message into the frame
@@ -39,7 +41,7 @@ class Embedding(metaclass=ABCMeta):
             frame: the frame with data encoded
         '''
         pass
-    
+
     @abstractmethod
     def decode(frame, *args, **kwargs):
         '''Decode data from a frame
@@ -85,12 +87,12 @@ class QR_RGB_1(Embedding):
 
     def encode(self, frame, m):
         '''Encode message in a frame by overlay the QR code on top.
-    
-        Args: 
+
+        Args:
             frame: PIL image object
             m: message to be encoded
             size: size of QR code
-    
+
         # TODO: alpha
         '''
         qr_arr = get_qr_array(m, self.qr_params)
@@ -103,11 +105,56 @@ class QR_RGB_1(Embedding):
 
     def decode(self, frame):
         f = frame.crop((0, 0, self.qr_size[0], self.qr_size[1]))
+        self.average_blocks(f)
         data = decode(f)
         if len(data) == 0:
             return None
         else:
             return data[0].data.decode("utf-8")
+
+    def average_blocks(self, frame):
+        ''' take a frame and map each block to one color according to the average.
+        this is an in place function. The qr is assumed to be starting at the top
+        right of the frame.
+
+        Args:
+            frame: PIL image object
+        '''
+
+        side_len_blocks = (self.qr_params['version'] - 1) * 4 + 21 + 8
+        if self.qr_size[0] == self.qr_size[1]:
+
+            if self.qr_size[0] % side_len_blocks == 0:
+                block_size_px = int(self.qr_size[0] / side_len_blocks)
+            else:
+                raise ValueError("qr not properly scaled")
+
+        else:
+            raise ValueError("qr not square")
+
+        x_px = 0
+        y_px = 0
+        for x in range(side_len_blocks):
+            for y in range(side_len_blocks):
+                #get block average
+                sum = 0
+                for i in range(x * block_size_px, (x+1) * block_size_px):
+                    for j in range(y * block_size_px, (y+1) * block_size_px):
+                        temp_px = frame.getpixel((i,j));
+                        sum += (temp_px[0] + temp_px[1] + temp_px[2])/3
+                avg = sum / (block_size_px**2)
+                if avg > 127.5:
+                    avg = 255
+                else:
+                    avg = 0
+
+                #set each block
+                for i in range(x * block_size_px, (x+1) * block_size_px):
+                    for j in range(y * block_size_px, (y+1) * block_size_px):
+                        frame.putpixel((i,j),(avg,avg,avg))
+
+        if random() < 0.1:
+            frame.show()
 
 
 class QR_RGB_3(Embedding):
@@ -131,7 +178,7 @@ class QR_RGB_3(Embedding):
         qr_img = qr_img.resize(self.qr_size)
         frame.paste(qr_img)
         return frame
-    
+
     def decode(self, frame):
         f = np.array(frame.crop((0, 0, self.qr_size[0], self.qr_size[1])))
         ms = []
@@ -169,7 +216,7 @@ class QR_YUV(Embedding):
         rgb = yuv.convert("RGB")
         frame.paste(rgb)
         return frame
-    
+
     def decode(self, frame):
         f = frame.convert("YCbCr")
         f = f.crop((0, 0, self.qr_size[0], self.qr_size[1]))
@@ -210,13 +257,13 @@ def _encode_one(mapper, inputs):
     f.save(output_path, "PNG")
     queue.put(0)
     return m
-    
+
 
 def encode_all(mapper, input_dir, output_dir):
     fnames = sorted(os.listdir(input_dir))[:100]
     fnames = [x for x in fnames if x.endswith('.png')]
     inputs = [os.path.join(input_dir, x) for x in fnames]
-    outputs = [os.path.join(output_dir, x) for x in fnames] 
+    outputs = [os.path.join(output_dir, x) for x in fnames]
     pool = Pool()
     worker = partial(_encode_one, mapper)
     inputs = list(zip(inputs, outputs))
@@ -274,34 +321,34 @@ def main():
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
 
-    mapper = QR_RGB_1(version=20)
+    mapper = QR_RGB_1(qr_size=(435,435), version=30)
 
     ms0 = encode_all(mapper, frames_dir, encoded_dir)
 
     print('ffmpeg encoding')
     subprocess.call(["rm", "temp.webm"])
     subprocess.call([
-        'ffmpeg', '-i', 
-        os.path.join(encoded_dir, 'image-%04d.png'), 
-        "-c:v", "libvpx",
-        "temp.webm"
-        ])
+       'ffmpeg', '-i',
+       os.path.join(encoded_dir, 'image-%04d.png'),
+       "-c:v", "libvpx",
+       "temp.webm"
+       ])
 
     print('ffmpeg decoding')
     subprocess.call([
-        'ffmpeg', '-i', 
-        'temp.webm', 
+        'ffmpeg', '-i',
+        'temp.webm',
         '-vf', 'scale=800:600',
         os.path.join(decoded_dir, 'image-%04d.png')
         ])
 
     ms1 = decode_all(mapper, decoded_dir)
-    
+
     acc = 0
     throughput = 0
     for k in ms0:
+        acc += ms0[k] == ms1[k]
         if ms1[k] is not None:
-            acc += ms0[k] == ms1[k]
             match = int(ms0[k], 2) & int(ms1[k], 2)
             throughput += '{:b}'.format(match).count('1')
     print()
