@@ -12,12 +12,13 @@ from abc import ABCMeta, abstractmethod
 import pyqrcode
 from pyzbar.pyzbar import decode
 
-input_dir = 'frames'
+frames_dir = 'frames'
 encoded_dir = 'encoded_frames'
 decoded_dir = 'decoded_frames'
 
 # putting these in global because I don't want to pass them around
 frame_size = (600, 800)
+frame_rate = 24
 
 
 class Embedding(metaclass=ABCMeta):
@@ -64,11 +65,11 @@ def get_qr_array(m, qr_params):
     return qr
 
 
-def get_max_qr_msg(qr_params):
+def get_max_qr_msg(qr_params, n_channels=1):
     '''Get a random message of max size for the current QR parameters
     '''
     # TODO
-    m = np.random.randint(2, size=(100,))
+    m = np.random.randint(2, size=(2000 * n_channels,))
     m = ''.join(str(x) for x in m)
     return m
 
@@ -140,7 +141,7 @@ class QR_RGB_3(Embedding):
             qr = Image.fromarray(qr, "RGB")
             data = decode(qr)
             if len(data) == 0:
-                ms.append('')
+                return None
             else:
                 ms.append(decode(qr)[0].data.decode("utf-8"))
         return ''.join(ms)
@@ -159,7 +160,7 @@ class QR_YUV(Embedding):
     def encode(self, frame, m):
         qr = get_qr_array(m, self.qr_params)
         qr = np.repeat(qr[:, :, np.newaxis], 3, axis=2)
-        qr = np.uint8(qr * self.depth)
+        qr = np.uint8(np.clip(qr * self.depth, 0, 255))
         qr = np.array(Image.fromarray(qr, "RGB").resize(self.qr_size))
         f = frame.crop((0, 0, self.qr_size[0], self.qr_size[1]))
         f = np.array(f.convert("YCbCr"))
@@ -261,12 +262,21 @@ def _multiprocess(worker, inputs, info=''):
 
 
 def main():
+    if not os.path.isdir(frames_dir):
+        os.makedirs(frames_dir)
+        print('generating initial frames')
+        subprocess.call([
+            'ffmpeg', '-i', 
+            'rms.webm', 
+            '-vf', 'scale=800:600',
+            os.path.join(frames_dir, 'image-%04d.png')
+            ])
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
 
-    mapper = QR_RGB_1()
+    mapper = QR_RGB_1(version=20)
 
-    ms0 = encode_all(mapper, input_dir, encoded_dir)
+    ms0 = encode_all(mapper, frames_dir, encoded_dir)
 
     print('ffmpeg encoding')
     subprocess.call(["rm", "temp.webm"])
@@ -288,9 +298,16 @@ def main():
     ms1 = decode_all(mapper, decoded_dir)
     
     acc = 0
+    throughput = 0
     for k in ms0:
-        acc += ms0[k] == ms1[k]
-    print(acc / len(ms0), len(ms0))
+        if ms1[k] is not None:
+            acc += ms0[k] == ms1[k]
+            match = int(ms0[k], 2) & int(ms1[k], 2)
+            throughput += '{:b}'.format(match).count('1')
+    print()
+    print('perfectly recovered {} of frames'.format(acc / len(ms0)))
+    print('through put (bps): {}'.format(
+        throughput / len(ms0) * frame_rate))
 
 
 if __name__ == '__main__':
