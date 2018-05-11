@@ -8,9 +8,10 @@ from multiprocessing import Pool, Manager
 from functools import partial
 from abc import ABCMeta, abstractmethod
 from random import random
-
 import pyqrcode
 from pyzbar.pyzbar import decode
+
+from util import get_qr_packet_size, get_qr_array_size
 
 frames_dir = 'frames'
 encoded_dir = 'encoded_frames'
@@ -20,6 +21,15 @@ decoded_dir = 'decoded_frames'
 frame_size = (600, 800)
 frame_rate = 24
 
+# fixed-size packets
+unit_packet_size = 100
+
+
+def get_unit_packet():
+    m = np.random.randint(0, 2, (unit_packet_size))
+    m = ''.join(str(x) for x in m)
+    return m
+
 
 class Embedding(metaclass=ABCMeta):
 
@@ -28,12 +38,12 @@ class Embedding(metaclass=ABCMeta):
     '''
 
     @abstractmethod
-    def encode(frame, m, *args, **kwargs):
+    def encode(frame, packets, *args, **kwargs):
         '''Encode given message into the frame
 
         Args:
             frame: a PIL.Image (RGB) object
-            m: message to be encoded
+            packets: list of packets to encode
 
         Returns:
             frame: the frame with data encoded
@@ -48,58 +58,128 @@ class Embedding(metaclass=ABCMeta):
             frame: a PIL.Image (RGB) object
 
         Return:
-            message: the message decoded from the frame, None if
-                decoding failed
+            packets: decoded packets, None if decoding failed
         '''
         pass
 
 
-def get_qr_array(m, qr_params):
-    '''Get two dimensional QR array for a message.
+class QR(Embedding):
+
+    def __init__(self, max_code_size=400,
+                 version=10, error='L', mode='numeric',
+                 depth=4, channels=[], color_space='RGB',
+                 alpha=1.0):
+        '''
+        Args:
+            max_code_size: maximum allowed code size in pixels
+            version, error, mode: QR parameters
+            depth: number of bits to encode in each block and channel
+            channel: indices of channels to embed data, tie channels if empty
+            color_space: embed in what color space
+            alpha: transparency of embedding, for all channels, 1 is opaque
+        '''
+        self.qr_params = {'error': error, 'version': version, 'mode': mode}
+        self.depth = depth
+        self.color_space = color_space
+        self.channels = channels
+        self.alpha = alpha
+
+        # determine pixel size of code
+        self.qr_array_size = get_qr_array_size(self.qr_params)
+        self.qr_block_size = max_code_size // self.qr_array_size
+        self.qr_code_size = self.qr_array_size * self.qr_block_size
+
+        # determine capacity in unit size messages
+        max_packet_size = get_qr_packet_size(self.qr_params)
+        self.n_channels = 1 if len(channels) == 0 else len(channels)
+        self.capacity = max_packet_size // unit_packet_size
+        self.capacity *= self.depth * self.n_channels
+
+    def get_qr_array(self, m):
+        '''Get two dimensional QR array for a message string.
+
         Args:
             m: the message to be encoded
-    '''
-    qr = pyqrcode.create(m, **qr_params)
-    qr = qr.text().split("\n")[:-1]
-    qr = np.array([[1 - int(z) for z in x] for x in qr])
-    return qr
+        Returns:
+            qr: 2D numpy array
+        '''
+        qr = pyqrcode.create(m, **self.qr_params)
+        qr = qr.text().split("\n")[:-1]
+        qr = np.array([[1 - int(z) for z in x] for x in qr])
+        return qr
 
+    def pack(self, packets):
+        '''split packets into channels then depth'''
+        if len(packets) < self.capacity:
+            n = self.capacity - len(packets)
+            packets += ['0' * unit_packet_size for _ in range(n)]
+        row_size = len(packets) // self.n_channels
+        col_size = len(packets) // (self.n_channels * self.depth)
+        pcks = []
+        for i in range(self.n_channels):
+            row = packets[i * row_size: (i+1) * row_size]
+            pcks.append([])
+            for j in range(self.depth):
+                col = row[j * col_size: (j+1) * col_size]
+                pcks[i].append(''.join(col))
+        return pcks
 
-def get_max_qr_msg(qr_params, n_channels=1):
-    '''Get a random message of max size for the current QR parameters
-    '''
-    # TODO
-    m = np.random.randint(2, size=(2000 * n_channels,))
-    m = ''.join(str(x) for x in m)
-    return m
+    def unpack(self, packets):
+        '''flatten 2d packet array into a list of packets'''
+        assert len(packets) == self.n_channels
+        assert len(packets[0]) == self.depth
+        pkts = []
+        for i in range(self.n_channels):
+            for j in range(self.depth):
+                ps = packets[i][j]
+                for st in range(0, len(ps), unit_packet_size):
+                    pkts.append(ps[st: st + unit_packet_size])
+        return pkts
 
-
-class QR_RGB_1(Embedding):
-
-    def __init__(self, qr_size=(400, 400), error='L', version=10,
-                 mode='numeric'):
-        self.qr_size = qr_size
-        self.qr_params = {'error': error,
-                          'version': version,
-                          'mode': mode}
-
-    def encode(self, frame, m):
+    def encode(self, frame, packets):
         '''Encode message in a frame by overlay the QR code on top.
 
         Args:
-            frame: PIL image object
-            m: message to be encoded
-            size: size of QR code
-
-        # TODO: alpha
+            frame: PIL image object in RGB mode
+            packets: list of packets to be encoded
         '''
-        qr_arr = get_qr_array(m, self.qr_params)
-        qr_rgb = np.repeat(qr_arr[:, :, np.newaxis], 3, axis=2)
-        qr_rgb = np.uint8(qr_rgb * 255)
-        qr_img = Image.fromarray(qr_rgb, "RGB")
-        qr_img = qr_img.resize(self.qr_size)
-        frame.paste(qr_img)
-        return frame
+        assert 256 % (2 ** (self.depth + 1)) == 0
+        half_bucket_size = 256 // (2 ** (self.depth + 1))
+        packets = self.pack(packets)
+
+        # get QR code for each channel and depth
+        channels = []
+        arr_size = (self.qr_array_size, self.qr_array_size)
+        for i in range(self.n_channels):
+            q = np.zeros(arr_size, dtype=np.int32)
+            for j in range(self.depth):
+                # merge across depth
+                q += self.get_qr_array(packets[i][j]) * (2 ** j)
+            # convert to [0, 255)
+            q = q * 2 * half_bucket_size + half_bucket_size
+            # scale
+            q = np.kron(q, np.ones((self.qr_block_size, self.qr_block_size)))
+            assert q.shape[0] == self.qr_code_size
+            channels.append(q)
+
+        background = frame.convert(self.color_space)
+        foreground = np.array(background)
+        if len(self.channels) == 0:
+            # put same data to all channels
+            cnl = np.repeat(channels[0][:, :, np.newaxis], 3, axis=2)
+            cnl = np.uint8(cnl)
+            foreground[:self.qr_code_size, :self.qr_code_size, :] = cnl
+        else:
+            # put data to corresponding channels
+            for i, c in enumerate(self.channels):
+                cnl = np.uint8(channels[i])
+                foreground[:self.qr_code_size, :self.qr_code_size, :] = cnl
+
+        foreground = Image.fromarray(foreground, self.color_space)
+        # blended = Image.blend(background, foreground, self.alpha)
+        blended = foreground
+        blended = blended.convert('RGB')
+        return blended
 
     def decode(self, frame):
         f = frame.crop((0, 0, self.qr_size[0], self.qr_size[1]))
@@ -153,52 +233,15 @@ class QR_RGB_1(Embedding):
             frame.show()
 
 
-class QR_RGB_3(Embedding):
-
-    def __init__(self, qr_size=(400, 400), error='L', version=10,
-                 mode='numeric'):
-        self.qr_size = qr_size
-        self.qr_params = {'error': error,
-                          'version': version,
-                          'mode': mode}
-
-    def encode(self, frame, m):
-        # encode message in rgb channels separately
-        ml = (len(m) + 3) // 3
-        ms = [m[i * ml: i * ml + ml] for i in range(3)]
-        assert len(ms) == 3
-        qr_rgb = [get_qr_array(m, self.qr_params) for m in ms]
-        qr_rgb = np.stack(qr_rgb, axis=2)
-        qr_rgb = np.uint8(qr_rgb * 255)
-        qr_img = Image.fromarray(qr_rgb, "RGB")
-        qr_img = qr_img.resize(self.qr_size)
-        frame.paste(qr_img)
-        return frame
-
-    def decode(self, frame):
-        f = np.array(frame.crop((0, 0, self.qr_size[0], self.qr_size[1])))
-        ms = []
-        for i in range(3):
-            qr = f[:, :, i][:, :, np.newaxis]
-            qr = np.repeat(qr, 3, axis=2)
-            qr = Image.fromarray(qr, "RGB")
-            data = decode(qr)
-            if len(data) == 0:
-                return None
-            else:
-                ms.append(decode(qr)[0].data.decode("utf-8"))
-        return ''.join(ms)
-
-
 class QR_YUV(Embedding):
 
     def __init__(self, depth=80, qr_size=(400, 400), error='L', version=10,
                  mode='numeric'):
         self.depth = depth
-        self.qr_size = qr_size
         self.qr_params = {'error': error,
                           'version': version,
                           'mode': mode}
+        self.qr_size = qr_size
 
     def encode(self, frame, m):
         qr = get_qr_array(m, self.qr_params)
@@ -350,5 +393,8 @@ def main():
         throughput / len(ms0) * frame_rate))
 
 
-if __name__ == '__main__':
-    main()
+qr = QR()
+packets = [get_unit_packet() for _ in range(qr.capacity)]
+frame = Image.open('test_frame.png')
+frame = qr.encode(frame, packets)
+frame.show()
