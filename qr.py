@@ -1,15 +1,16 @@
 import os
 import sys
 import time
+import random
 import numpy as np
 import subprocess
 from PIL import Image
-from multiprocessing import Pool, Manager
 from functools import partial
+from multiprocessing import Pool, Manager
 from abc import ABCMeta, abstractmethod
-from random import random
 import pyqrcode
-from pyzbar.pyzbar import decode
+from pyzbar.pyzbar import decode as qr_decode
+from scipy.ndimage.interpolation import zoom
 
 from util import get_qr_packet_size, get_qr_array_size
 
@@ -29,6 +30,20 @@ def get_unit_packet():
     m = np.random.randint(0, 2, (unit_packet_size))
     m = ''.join(str(x) for x in m)
     return m
+
+
+def blockshaped(arr, nrows, ncols):
+    """
+    Return an array of shape (n, nrows, ncols) where
+    n * nrows * ncols = arr.size
+
+    If arr is a 2D array, the returned array should look like n subblocks with
+    each subblock preserving the "physical" layout of arr.
+    """
+    h, w = arr.shape
+    return (arr.reshape(h // nrows, nrows, -1, ncols)
+               .swapaxes(1, 2)
+               .reshape(-1, nrows, ncols))
 
 
 class Embedding(metaclass=ABCMeta):
@@ -68,7 +83,7 @@ class QR(Embedding):
     def __init__(self, max_code_size=400,
                  version=10, error='L', mode='numeric',
                  depth=4, channels=[], color_space='RGB',
-                 alpha=1.0):
+                 alpha=1):
         '''
         Args:
             max_code_size: maximum allowed code size in pixels
@@ -137,24 +152,30 @@ class QR(Embedding):
         return pkts
 
     def bucketize(self, qs):
-        '''depth * [height, width] array -> [height, width]'''
+        '''depth * [height, width] -> [height, width]'''
         assert len(qs) == self.depth
 
         if self.depth == 1:
             return qs[0] * 255
 
         assert 256 % (2 ** (self.depth + 1)) == 0
-        half_bucket_size = 256 // (2 ** (self.depth + 1))
+        half_bin_size = 256 // (2 ** (self.depth + 1))
         # convert to [0, 255)
         arr_size = (self.qr_array_size, self.qr_array_size)
         merged = np.zeros(arr_size, dtype=np.int32)
         for i, q in enumerate(qs):
             merged += q * (2 ** i)
-        merged = merged * 2 * half_bucket_size + half_bucket_size
+        merged = merged * 2 * half_bin_size + half_bin_size
         return merged
 
-    def debucketize(self, q):
-        pass
+    def debucketize(self, frame):
+        '''[height, width] -> depth * [height, width]'''
+        if self.depth == 1:
+            return [frame]
+        bin_size = 256 // (2 ** self.depth)
+        bins = list(range(0, 255 + bin_size, bin_size))
+        frame = np.digitize(frame, bins)
+
 
     def encode(self, frame, packets):
         '''Encode message in a frame by overlay the QR code on top.
@@ -173,7 +194,9 @@ class QR(Embedding):
                 qs.append(self.get_qr_array(packets[i][j]))
             q = self.bucketize(qs)
             # scale
-            q = np.kron(q, np.ones((self.qr_block_size, self.qr_block_size)))
+            # q = np.kron(q, np.ones((self.qr_block_size, self.qr_block_size)))
+            q = np.repeat(q, self.qr_block_size*np.ones(q.shape[0], np.int), 0)
+            q = np.repeat(q, self.qr_block_size*np.ones(q.shape[1], np.int), 1)
             assert q.shape[0] == self.qr_code_size
             channels.append(q)
         background = frame.convert(self.color_space)
@@ -188,20 +211,49 @@ class QR(Embedding):
                 cnl = channels[i]
                 foreground[:self.qr_code_size, :self.qr_code_size, c] = cnl
 
-        foreground = np.uint8(foreground)
-        foreground = Image.fromarray(foreground, self.color_space)
-        blended = Image.blend(background, foreground, self.alpha)
+        background = np.array(background)
+        blended = foreground * self.alpha + background * (1 - self.alpha)
+        blended = Image.fromarray(np.uint8(blended), self.color_space)
         blended = blended.convert('RGB')
+
+        # foreground = Image.fromarray(np.uint8(foreground), self.color_space)
+        # blended = Image.blend(background, foreground, self.alpha)
+        # blended = blended.convert('RGB')
         return blended
 
-    def decode(self, frame):
-        f = frame.crop((0, 0, self.qr_size[0], self.qr_size[1]))
-        self.average_blocks(f)
-        data = decode(f)
-        if len(data) == 0:
-            return None
+    def decode(self, frame, true_frame=None):
+        if self.alpha < 1 and true_frame is None:
+            raise ValueError("True frame is required when alpha is not 1")
+        frame = np.array(frame.convert(self.color_space))
+        # subtract true frame
+        if true_frame is not None:
+            true_frame = np.array(true_frame.convert(self.color_space))
+            frame = (frame - true_frame * (1 - self.alpha)) / self.alpha
+            frame = np.uint8(frame)
+        # crop out the code
+        frame = frame[:self.qr_code_size, :self.qr_code_size, :]
+        # extract encoded channels
+        if len(self.channels) == 0:
+            channels = [frame[:, :, 0]]
         else:
-            return data[0].data.decode("utf-8")
+            channels = [frame[:, :, c] for c in self.channels]
+        qrs = []
+        for c in channels:
+            qrs.append([])
+            c = blockshaped(c, self.qr_block_size, self.qr_block_size)
+            c = np.mean(c, (1, 2)).reshape(self.qr_array_size, self.qr_array_size)
+            qrs[-1] = self.debucketize(c)
+
+        # # self.average_blocks(f)
+        # data = qr_decode(f)
+        # if len(data) == 0:
+        #     return None
+        # else:
+        #     return data[0].data.decode("utf-8")
+
+        # rate = 1 / self.qr_block_size
+        # frame = zoom(frame, (rate, rate, 1))
+        # assert frame.shape[0] == self.qr_array_size
 
     def average_blocks(self, frame):
         ''' take a frame and map each block to one color according to
@@ -242,8 +294,8 @@ class QR(Embedding):
                     for j in range(y * block_size_px, (y+1) * block_size_px):
                         frame.putpixel((i, j), (avg, avg, avg))
 
-        if random() < 0.1:
-            frame.show()
+        # if random() < 0.1:
+        #     frame.show()
 
 
 class QR_YUV(Embedding):
@@ -406,8 +458,9 @@ def main():
         throughput / len(ms0) * frame_rate))
 
 
-qr = QR(depth=3, color_space='YCbCr', channels=[0])
+qr = QR(depth=4, color_space='YCbCr', channels=[0])
 packets = [get_unit_packet() for _ in range(qr.capacity)]
 frame = Image.open('test_frame.png')
 frame = qr.encode(frame, packets)
-frame.show()
+# frame.show()
+qr.decode(frame)
