@@ -108,7 +108,7 @@ class QR(Embedding):
         qr = np.array([[1 - int(z) for z in x] for x in qr])
         return qr
 
-    def pack(self, packets):
+    def pack_packets(self, packets):
         '''split packets into channels then depth'''
         if len(packets) < self.capacity:
             n = self.capacity - len(packets)
@@ -124,7 +124,7 @@ class QR(Embedding):
                 pcks[i].append(''.join(col))
         return pcks
 
-    def unpack(self, packets):
+    def unpack_packets(self, packets):
         '''flatten 2d packet array into a list of packets'''
         assert len(packets) == self.n_channels
         assert len(packets[0]) == self.depth
@@ -136,6 +136,26 @@ class QR(Embedding):
                     pkts.append(ps[st: st + unit_packet_size])
         return pkts
 
+    def bucketize(self, qs):
+        '''depth * [height, width] array -> [height, width]'''
+        assert len(qs) == self.depth
+
+        if self.depth == 1:
+            return qs[0] * 255
+
+        assert 256 % (2 ** (self.depth + 1)) == 0
+        half_bucket_size = 256 // (2 ** (self.depth + 1))
+        # convert to [0, 255)
+        arr_size = (self.qr_array_size, self.qr_array_size)
+        merged = np.zeros(arr_size, dtype=np.int32)
+        for i, q in enumerate(qs):
+            merged += q * (2 ** i)
+        merged = merged * 2 * half_bucket_size + half_bucket_size
+        return merged
+
+    def debucketize(self, q):
+        pass
+
     def encode(self, frame, packets):
         '''Encode message in a frame by overlay the QR code on top.
 
@@ -143,41 +163,34 @@ class QR(Embedding):
             frame: PIL image object in RGB mode
             packets: list of packets to be encoded
         '''
-        assert 256 % (2 ** (self.depth + 1)) == 0
-        half_bucket_size = 256 // (2 ** (self.depth + 1))
-        packets = self.pack(packets)
-
         # get QR code for each channel and depth
+        packets = self.pack_packets(packets)
         channels = []
-        arr_size = (self.qr_array_size, self.qr_array_size)
         for i in range(self.n_channels):
-            q = np.zeros(arr_size, dtype=np.int32)
+            qs = []
             for j in range(self.depth):
                 # merge across depth
-                q += self.get_qr_array(packets[i][j]) * (2 ** j)
-            # convert to [0, 255)
-            q = q * 2 * half_bucket_size + half_bucket_size
+                qs.append(self.get_qr_array(packets[i][j]))
+            q = self.bucketize(qs)
             # scale
             q = np.kron(q, np.ones((self.qr_block_size, self.qr_block_size)))
             assert q.shape[0] == self.qr_code_size
             channels.append(q)
-
         background = frame.convert(self.color_space)
         foreground = np.array(background)
         if len(self.channels) == 0:
             # put same data to all channels
             cnl = np.repeat(channels[0][:, :, np.newaxis], 3, axis=2)
-            cnl = np.uint8(cnl)
             foreground[:self.qr_code_size, :self.qr_code_size, :] = cnl
         else:
             # put data to corresponding channels
             for i, c in enumerate(self.channels):
-                cnl = np.uint8(channels[i])
-                foreground[:self.qr_code_size, :self.qr_code_size, :] = cnl
+                cnl = channels[i]
+                foreground[:self.qr_code_size, :self.qr_code_size, c] = cnl
 
+        foreground = np.uint8(foreground)
         foreground = Image.fromarray(foreground, self.color_space)
-        # blended = Image.blend(background, foreground, self.alpha)
-        blended = foreground
+        blended = Image.blend(background, foreground, self.alpha)
         blended = blended.convert('RGB')
         return blended
 
@@ -393,7 +406,7 @@ def main():
         throughput / len(ms0) * frame_rate))
 
 
-qr = QR()
+qr = QR(depth=3, color_space='YCbCr', channels=[0])
 packets = [get_unit_packet() for _ in range(qr.capacity)]
 frame = Image.open('test_frame.png')
 frame = qr.encode(frame, packets)

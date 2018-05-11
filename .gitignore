@@ -1,5 +1,7 @@
-*.webm
+__pycache__
+temp.webm
 .ipynb_checkpoints
+.DS_Store
 frames
 encoded_frames
 decoded_frames
