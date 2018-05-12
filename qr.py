@@ -369,8 +369,6 @@ def main():
         subprocess.call([
             'ffmpeg',
             '-i', 'rms.webm',
-            '-ss', '00:00:13',
-            '-to', '00:01:50',
             '-vf', 'scale=800:600',
             os.path.join(frames_dir, 'image-%04d.png')
             ])
