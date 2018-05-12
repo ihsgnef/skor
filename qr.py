@@ -15,7 +15,6 @@ from util import get_qr_packet_size, get_qr_array_size
 
 frames_dir = 'frames'
 encoded_dir = 'encoded_frames'
-synced_dir = 'synced_frames'
 decoded_dir = 'decoded_frames'
 
 # putting these in global because I don't want to pass them around
@@ -132,7 +131,7 @@ class QR(Embedding):
         '''split packets into channels then depth'''
         if len(packets) < self.capacity:
             n = self.capacity - len(packets)
-            packets += ['0' * unit_packet_size for _ in range(n)]
+            packets += ['' for _ in range(n)]
         row_size = len(packets) // self.n_channels
         col_size = len(packets) // (self.n_channels * self.depth)
         pcks = []
@@ -369,17 +368,30 @@ def main():
     qr = QR(max_code_size=600, version=30, depth=1, color_space='RGB',
             channels=[])
 
+    qr_sync = QR(max_code_size=200, version=5, tlx=0, tly=600, depth=1,
+                 color_space='RGB', channels=[])
+
     names = sorted(os.listdir(frames_dir))
     names = [x for x in names if x.endswith('.png')][:30]
     packets_0 = [[get_unit_packet() for _ in range(qr.capacity)] 
                  for _ in names]
+
+    # encode data
     indirs = [os.path.join(frames_dir, x) for x in names]
     outdirs = [os.path.join(encoded_dir, x) for x in names]
     inputs = list(zip(indirs, outdirs, packets_0))
     worker = partial(_encode_one, qr)
     _multiprocess(worker, inputs, info='encoding frames')
 
-    ''' video encoding and decoding '''
+    # encode synchronization info
+    packet_ids = [[str(x)] for x in range(len(names))]
+    packets_0 = {i[0]: x for i, x in zip(packet_ids, packets_0)}
+    dirs = [os.path.join(encoded_dir, x) for x in names]
+    inputs = list(zip(dirs, dirs, packet_ids))
+    worker = partial(_encode_one, qr_sync)
+    _multiprocess(worker, inputs, info='encoding sync')
+
+    # video encoding and decoding
     print('ffmpeg encoding')
     subprocess.call([
        'ffmpeg', '-i',
@@ -396,15 +408,25 @@ def main():
         os.path.join(decoded_dir, 'image-%04d.png')
         ])
 
-
-    indirs = [os.path.join(encoded_dir, f) for f in names]
+    # decode data
+    indirs = [os.path.join(decoded_dir, f) for f in names]
     worker = partial(_decode_one, qr)
     packets_1 = _multiprocess(worker, indirs, info='decoding frames')
+
+    # decode sync
+    indirs = [os.path.join(decoded_dir, f) for f in names]
+    worker = partial(_decode_one, qr_sync)
+    packet_ids = _multiprocess(worker, indirs, info='decoding frames')
+    packets_1 = {i[0]: x for i, x in zip(packet_ids, packets_1)}
 
     acc = 0
     throughput = 0
     sum_len = 0
-    for p0, p1 in zip(packets_0, packets_1):
+    for k in packets_0:
+        if k not in packets_1:
+            continue
+        p0 = packets_0[k]
+        p1 = packets_1[k]
         ok = [x for x, y in zip(p0, p1) if x == y]
         acc += len(ok)
         sum_len += len(p0)
@@ -425,7 +447,8 @@ def main():
 # 
 # qr_sync = QR(max_code_size=200, version=5, tlx=0, tly=600, depth=1,
 #         color_space='RGB', channels=[])
-# encoded = qr_sync.encode(encoded, ['123198273'])
+# encoded = qr_sync.encode(encoded_dir, ['123198273'])
 # encoded.show()
+# print(qr_sync.decode(encoded))
 
 main()
