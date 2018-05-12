@@ -120,7 +120,7 @@ class QR(Embedding):
             qr: 2D numpy array
         '''
         qr = pyqrcode.create(m, **self.qr_params)
-        qr = qr.text().split("\n")[:-1]
+        qr = qr.text().split('\n')[:-1]
         qr = np.array([[1 - int(z) for z in x] for x in qr])
         return qr
 
@@ -227,7 +227,7 @@ class QR(Embedding):
 
     def decode(self, frame, true_frame=None):
         if self.alpha < 1 and true_frame is None:
-            raise ValueError("True frame is required when alpha is not 1")
+            raise ValueError('True frame is required when alpha is not 1')
         frame = np.array(frame.convert(self.color_space))
         # subtract true frame
         if true_frame is not None:
@@ -257,8 +257,7 @@ class QR(Embedding):
                 if len(m) == 0:
                     m = '0' * self.packet_size
                 else:
-                    m = m[0].data.decode("utf-8")
-                assert len(m) == self.packet_size
+                    m = m[0].data.decode('utf-8')
                 packets[-1].append(m)
         return self.unpack_packets(packets)
 
@@ -277,10 +276,10 @@ class QR(Embedding):
             if self.qr_size[0] % side_len_blocks == 0:
                 block_size_px = int(self.qr_size[0] / side_len_blocks)
             else:
-                raise ValueError("qr not properly scaled")
+                raise ValueError('qr not properly scaled')
 
         else:
-            raise ValueError("qr not square")
+            raise ValueError('qr not square')
 
         for x in range(side_len_blocks):
             for y in range(side_len_blocks):
@@ -323,31 +322,31 @@ def basic_test():
 def _encode_one(mapper, inputs):
     (input_path, output_path), queue = inputs
     frame = Image.open(input_path)
-    m = get_max_qr_msg(mapper.qr_params)
-    f = mapper.encode(frame, m)
-    f.save(output_path, "PNG")
+    packets = [get_unit_packet() for _ in range(mapper.capacity)]
+    f = mapper.encode(frame, packets)
+    f.save(output_path, 'PNG')
     queue.put(0)
-    return m
+    return packets
 
 
 def encode_all(mapper, input_dir, output_dir):
-    fnames = sorted(os.listdir(input_dir))[:100]
+    fnames = sorted(os.listdir(input_dir))[:30]
     fnames = [x for x in fnames if x.endswith('.png')]
     inputs = [os.path.join(input_dir, x) for x in fnames]
     outputs = [os.path.join(output_dir, x) for x in fnames]
     worker = partial(_encode_one, mapper)
     inputs = list(zip(inputs, outputs))
-    ms = _multiprocess(worker, inputs, info='encoding frames')
-    ms = {f: m for f, m in zip(fnames, ms)}
-    return ms
+    packets = _multiprocess(worker, inputs, info='encoding frames')
+    packets = {f: m for f, m in zip(fnames, packets)}
+    return packets
 
 
 def _decode_one(mapper, inputs):
     input_path, queue = inputs
     frame = Image.open(input_path)
-    m = mapper.decode(frame)
+    packets = mapper.decode(frame)
     queue.put(0)
-    return m
+    return packets
 
 
 def decode_all(mapper, input_dir):
@@ -355,9 +354,9 @@ def decode_all(mapper, input_dir):
     fnames = [x for x in fnames if x.endswith('.png')]
     worker = partial(_decode_one, mapper)
     inputs = [os.path.join(input_dir, f) for f in fnames]
-    ms = _multiprocess(worker, inputs, info='decoding frames')
-    ms = {f: m for f, m in zip(fnames, ms)}
-    return ms
+    packets = _multiprocess(worker, inputs, info='decoding frames')
+    packets = {f: m for f, m in zip(fnames, packets)}
+    return packets
 
 
 def _multiprocess(worker, inputs, info=''):
@@ -390,16 +389,19 @@ def main():
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
 
-    mapper = QR_RGB_1(qr_size=(435, 435), version=20)
-    ms0 = encode_all(mapper, frames_dir, encoded_dir)
+    mapper = QR(max_code_size=600, version=10, depth=1, color_space='RGB', channels=[0, 1, 2])
+    packets_0 = encode_all(mapper, frames_dir, encoded_dir)
 
+    '''
     print('ffmpeg encoding')
-    subprocess.call(["rm", "temp.webm"])
+    subprocess.call(['rm', 'temp.webm'])
+    subprocess.call(['rm', '-r' 'encoded_frames'])
+    subprocess.call(['rm', '-r' 'decoded_frames'])
     subprocess.call([
        'ffmpeg', '-i',
        os.path.join(encoded_dir, 'image-%04d.png'),
-       "-c:v", "libvpx",
-       "temp.webm"
+       '-c:v', 'libvpx',
+       'temp.webm'
        ])
 
     print('ffmpeg decoding')
@@ -409,28 +411,32 @@ def main():
         '-vf', 'scale=800:600',
         os.path.join(decoded_dir, 'image-%04d.png')
         ])
+    '''
 
-    ms1 = decode_all(mapper, decoded_dir)
+    packets_1 = decode_all(mapper, encoded_dir)
 
     acc = 0
     throughput = 0
-    for k in ms0:
-        acc += ms0[k] == ms1[k]
-        if ms1[k] is not None:
-            match = int(ms0[k], 2) & int(ms1[k], 2)
-            throughput += '{:b}'.format(match).count('1')
+    for k in packets_0:
+        if k not in packets_1:
+            continue
+        ok = [x for x, y in zip(packets_0[k], packets_1[k]) if x == y]
+        acc += len(ok)
+        throughput += len(ok) * unit_packet_size / 8000
     print()
-    print('perfectly recovered {} of frames'.format(acc / len(ms0)))
-    print('through put (bps): {}'.format(
-        throughput / len(ms0) * frame_rate))
+    print('avg. packet recovery rate', acc / len(packets_0))
+    print('avg. through put (kB per frame)', throughput / len(packets_0))
 
 
-qr = QR(max_code_size=600, version=40, depth=4, color_space='RGB', channels=[0, 1, 2], alpha=0.2)
-packets = [get_unit_packet() for _ in range(qr.capacity)]
-original = Image.open('test_frame.png')
-encoded = qr.encode(original, packets)
-encoded.show()
-ps = qr.decode(encoded, original)
-recovered = [x for x, y in zip(packets, ps) if x == y]
-print('packet recovery rate', len(recovered) / len(packets))
-print('through put (kB per frame)', len(recovered) * unit_packet_size / 8000)
+
+# qr = QR(max_code_size=600, version=10, depth=3, color_space='RGB', channels=[0, 1, 2])
+# packets = [get_unit_packet() for _ in range(qr.capacity)]
+# original = Image.open('test_frame.png')
+# encoded = qr.encode(original, packets)
+# encoded.show()
+# ps = qr.decode(encoded, original)
+# recovered = [x for x, y in zip(packets, ps) if x == y]
+# print('packet recovery rate', len(recovered) / len(packets))
+# print('through put (kB per frame)', len(recovered) * unit_packet_size / 8000)
+
+main()
