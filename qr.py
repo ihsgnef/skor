@@ -109,6 +109,7 @@ class QR(Embedding):
         self.n_channels = 1 if len(channels) == 0 else len(channels)
         self.capacity = max_packet_size // unit_packet_size
         self.capacity *= self.depth * self.n_channels
+        self.packet_size = (max_packet_size // unit_packet_size) * unit_packet_size
 
     def get_qr_array(self, m):
         '''Get two dimensional QR array for a message string.
@@ -253,7 +254,11 @@ class QR(Embedding):
                 qr = np.repeat(qr, self.qr_block_size*np.ones(qr.shape[1], np.int), 1)
                 qr = Image.fromarray(np.uint8(qr * 255), 'RGB')
                 m = qr_decode(qr)
-                m = None if len(m) == 0 else m[0].data.decode("utf-8")
+                if len(m) == 0:
+                    m = '0' * self.packet_size
+                else:
+                    m = m[0].data.decode("utf-8")
+                assert len(m) == self.packet_size
                 packets[-1].append(m)
         return self.unpack_packets(packets)
 
@@ -420,10 +425,10 @@ def main():
         throughput / len(ms0) * frame_rate))
 
 
-qr = QR(depth=3, color_space='RGB', channels=[0, 1, 2])
+qr = QR(version=20, depth=3, color_space='YCbCr', channels=[0], alpha=0.2)
 packets = [get_unit_packet() for _ in range(qr.capacity)]
-frame = Image.open('test_frame.png')
-frame = qr.encode(frame, packets)
-frame.show()
-ps = qr.decode(frame)
-print(packets == ps)
+original = Image.open('test_frame.png')
+encoded = qr.encode(original, packets)
+encoded.show()
+ps = qr.decode(encoded, original)
+print([x == y for x, y in zip(packets, ps)])
