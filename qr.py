@@ -425,10 +425,12 @@ def main():
         throughput / len(ms0) * frame_rate))
 
 
-qr = QR(version=20, depth=3, color_space='YCbCr', channels=[0], alpha=0.2)
+qr = QR(max_code_size=600, version=40, depth=4, color_space='RGB', channels=[0, 1, 2], alpha=0.2)
 packets = [get_unit_packet() for _ in range(qr.capacity)]
 original = Image.open('test_frame.png')
 encoded = qr.encode(original, packets)
 encoded.show()
 ps = qr.decode(encoded, original)
-print([x == y for x, y in zip(packets, ps)])
+recovered = [x for x, y in zip(packets, ps) if x == y]
+print('packet recovery rate', len(recovered) / len(packets))
+print('through put (kB per frame)', len(recovered) * unit_packet_size / 8000)
