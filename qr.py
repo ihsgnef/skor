@@ -161,8 +161,7 @@ class QR(Embedding):
         assert 256 % (2 ** (self.depth + 1)) == 0
         half_bin_size = 256 // (2 ** (self.depth + 1))
         # convert to [0, 255)
-        arr_size = (self.qr_array_size, self.qr_array_size)
-        merged = np.zeros(arr_size, dtype=np.int32)
+        merged = np.zeros_like(qs[0], dtype=np.int32)
         for i, q in enumerate(qs):
             merged += q * (2 ** i)
         merged = merged * 2 * half_bin_size + half_bin_size
@@ -174,7 +173,7 @@ class QR(Embedding):
             return [frame]
         bin_size = 256 // (2 ** self.depth)
         bins = list(range(0, 255 + bin_size, bin_size))
-        frame = np.digitize(frame, bins)
+        frame = np.digitize(frame, bins) - 1
         fs = []
         for i in range(self.depth):
             fs.append(frame % 2)
@@ -250,7 +249,9 @@ class QR(Embedding):
             packets.append([])
             for j, qr in enumerate(qrs):
                 qr = np.repeat(qr[:, :, np.newaxis], 3, axis=2)
-                qr = Image.fromarray(np.uint8(qr), 'RGB')
+                qr = np.repeat(qr, self.qr_block_size*np.ones(qr.shape[0], np.int), 0)
+                qr = np.repeat(qr, self.qr_block_size*np.ones(qr.shape[1], np.int), 1)
+                qr = Image.fromarray(np.uint8(qr * 255), 'RGB')
                 m = qr_decode(qr)
                 m = None if len(m) == 0 else m[0].data.decode("utf-8")
                 packets[-1].append(m)
@@ -419,10 +420,10 @@ def main():
         throughput / len(ms0) * frame_rate))
 
 
-qr = QR(depth=1, color_space='RGB', channels=[])
+qr = QR(depth=3, color_space='RGB', channels=[0, 1, 2])
 packets = [get_unit_packet() for _ in range(qr.capacity)]
 frame = Image.open('test_frame.png')
 frame = qr.encode(frame, packets)
-# frame.show()
+frame.show()
 ps = qr.decode(frame)
 print(packets == ps)
