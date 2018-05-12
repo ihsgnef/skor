@@ -414,7 +414,7 @@ def main():
             continue
         ok = [x for x, y in zip(packets_0[k], packets_1[k]) if x == y]
         acc += len(ok)
-        sum_len += len(packets_0[k])
+        sum_len += len(packets_0[k].encode('utf-8'))
         throughput += len(ok) * unit_packet_size / 8000
 
     print()
@@ -433,4 +433,8 @@ def main():
 # print('packet recovery rate', len(recovered) / len(packets))
 # print('through put (kB per frame)', len(recovered) * unit_packet_size / 8000)
 
-main()
+# main()
+
+m = str(os.urandom(2953))
+print(m)
+a = pyqrcode.create(m, version=40, error='L', mode='binary')
