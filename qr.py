@@ -366,21 +366,18 @@ def main():
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
 
-    n_frames = 30
-
     qr = QR(max_code_size=600, version=30, depth=1, color_space='RGB',
             channels=[])
-    packets_0 = [[get_unit_packet() for _ in range(qr.capacity)] 
-                 for _ in range(n_frames)]
 
-    names = sorted(os.listdir(frames_dir))[:n_frames]
-    names = [x for x in names if x.endswith('.png')]
+    names = sorted(os.listdir(frames_dir))
+    names = [x for x in names if x.endswith('.png')][:30]
+    packets_0 = [[get_unit_packet() for _ in range(qr.capacity)] 
+                 for _ in names]
     indirs = [os.path.join(frames_dir, x) for x in names]
     outdirs = [os.path.join(encoded_dir, x) for x in names]
     inputs = list(zip(indirs, outdirs, packets_0))
     worker = partial(_encode_one, qr)
     _multiprocess(worker, inputs, info='encoding frames')
-
 
     ''' video encoding and decoding '''
     print('ffmpeg encoding')
@@ -403,7 +400,6 @@ def main():
     indirs = [os.path.join(encoded_dir, f) for f in names]
     worker = partial(_decode_one, qr)
     packets_1 = _multiprocess(worker, indirs, info='decoding frames')
-
 
     acc = 0
     throughput = 0
