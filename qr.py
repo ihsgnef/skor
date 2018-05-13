@@ -4,6 +4,7 @@ import time
 import random
 import numpy as np
 import subprocess
+from tqdm import tqdm
 from PIL import Image
 from functools import partial
 from multiprocessing import Pool, Manager
@@ -124,6 +125,7 @@ class SimpleCode(BlockCode):
         self.frame_capacity = self.array_size[0] * self.array_size[1]
         self.capacity = self.frame_capacity // unit_packet_size
         self.capacity *= self.depth * self.n_channels
+        self.capacity_multiplier = 1
 
     def get_code_array(self, msg):
         '''convert binary string to code array'''
@@ -166,13 +168,45 @@ class SimpleCode(BlockCode):
             for i, c in enumerate(self.channels):
                 cnl = channels[i]
                 foreground[self.tlx: self.tlx + self.code_size[0],
-                           self.tly: self.tly + self.code_size[1], :] = cnl
+                           self.tly: self.tly + self.code_size[1], c] = cnl
 
         background = np.array(background)
         blended = foreground * self.alpha + background * (1 - self.alpha)
         blended = Image.fromarray(np.uint8(blended), self.color_space)
         blended = blended.convert('RGB')
         return blended
+
+    def decode(self, frame, true_frame=None):
+        if self.alpha < 1 and true_frame is None:
+            raise ValueError('True frame is required when alpha is not 1')
+        frame = np.array(frame.convert(self.color_space))
+        # subtract true frame
+        if true_frame is not None and self.alpha < 1:
+            true_frame = np.array(true_frame.convert(self.color_space))
+            frame = (frame - true_frame * (1 - self.alpha)) / self.alpha
+            frame = np.clip(frame, 0, 255)
+            frame = np.uint8(frame)
+        # crop out the code
+        frame = frame[self.tlx: self.tlx + self.code_size[0],
+                      self.tly: self.tly + self.code_size[1], :]
+        # extract encoded channels
+        if len(self.channels) == 0:
+            channels = [frame[:, :, 0]]
+        else:
+            channels = [frame[:, :, c] for c in self.channels]
+        packets = []
+        for c in channels:
+            c = blockshaped(c, self.block_size, self.block_size)
+            c = np.mean(c, (1, 2))
+            c = c.reshape(self.array_size)
+            qrs = self.debucketize(c)
+            assert len(qrs) == self.depth
+            packets.append([])
+            for j, q in enumerate(qrs):
+                q = q / 255
+                m = ''.join(str(int(x > 0.5)) for x in q.ravel())
+                packets[-1].append(m)
+        return self.unpack_packets(packets)
 
 
 class QRCode(BlockCode):
@@ -210,6 +244,7 @@ class QRCode(BlockCode):
         self.capacity *= self.depth * self.n_channels
         self.frame_capacity = max_packet_size // unit_packet_size
         self.frame_capacity *= unit_packet_size
+        self.capacity_multiplier = 3
 
     def get_qr_array(self, m):
         '''Get two dimensional QR array for a message string.
@@ -258,7 +293,7 @@ class QRCode(BlockCode):
             for i, c in enumerate(self.channels):
                 cnl = channels[i]
                 foreground[self.tlx: self.tlx + self.qr_code_size,
-                           self.tly: self.tly + self.qr_code_size, :] = cnl
+                           self.tly: self.tly + self.qr_code_size, c] = cnl
 
         background = np.array(background)
         blended = foreground * self.alpha + background * (1 - self.alpha)
@@ -363,7 +398,7 @@ def _multiprocess(worker, inputs, info=''):
     return result.get()
 
 
-def main():
+def main(emb, emb_sync, video=False):
     if not os.path.isdir(frames_dir):
         os.makedirs(frames_dir)
         print('generating initial frames')
@@ -383,49 +418,43 @@ def main():
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
 
-    qr = QRCode(
-            max_code_size=600,
-            depth=1, color_space='RGB', channels=[], alpha=0.4,
-            version=30)
-
-    qr_sync = QRCode(
-            tlx=0, tly=600, max_code_size=200,
-            depth=1, color_space='RGB', channels=[],
-            version=5, mode='binary')
-
     names = sorted(os.listdir(frames_dir))
     names = [x for x in names if x.endswith('.png')][:30]
     in_dirs = [os.path.join(frames_dir, x) for x in names]
-    packets = [[get_unit_packet() for _ in range(qr.capacity)]
+    packets = [[get_unit_packet() for _ in range(emb.capacity)]
                for _ in names]
     packets_0 = {i: x for i, x in zip(in_dirs, packets)}
 
     # encode data
     enc_dirs = [os.path.join(encoded_dir, x) for x in names]
     inputs = list(zip(in_dirs, enc_dirs, packets, in_dirs))
-    worker = partial(_encode_sync, qr, qr_sync)
+    worker = partial(_encode_sync, emb, emb_sync)
     _multiprocess(worker, inputs, info='encoding frames')
 
-    # video encoding and decoding
-    print('ffmpeg encoding')
-    subprocess.call([
-       'ffmpeg', '-i',
-       os.path.join(encoded_dir, 'image-%04d.png'),
-       '-c:v', 'libvpx',
-       'temp.webm'
-       ])
+    if video:
+        # video encoding and decoding
+        print('ffmpeg encoding')
+        subprocess.call([
+           'ffmpeg', '-i',
+           os.path.join(encoded_dir, 'image-%04d.png'),
+           '-c:v', 'libvpx',
+           'temp.webm'
+           ])
 
-    print('ffmpeg decoding')
-    subprocess.call([
-        'ffmpeg', '-i',
-        'temp.webm',
-        '-vf', 'scale=800:600',
-        os.path.join(decoded_dir, 'image-%04d.png')
-        ])
+        print('ffmpeg decoding')
+        subprocess.call([
+            'ffmpeg', '-i',
+            'temp.webm',
+            '-vf', 'scale=800:600',
+            os.path.join(decoded_dir, 'image-%04d.png')
+            ])
 
     # decode data
-    dec_dirs = [os.path.join(decoded_dir, f) for f in names]
-    worker = partial(_decode_sync, qr, qr_sync)
+    if video:
+        dec_dirs = [os.path.join(decoded_dir, f) for f in names]
+    else:
+        dec_dirs = [os.path.join(encoded_dir, f) for f in names]
+    worker = partial(_decode_sync, emb, emb_sync)
     results = _multiprocess(worker, dec_dirs, info='decoding frames')
     names_decoded, packets_1 = list(map(list, zip(*results)))
     packets_1 = {i: x for i, x in zip(names_decoded, packets_1)}
@@ -446,32 +475,63 @@ def main():
     print()
     print('avg. packet recovery rate', acc / sum_len)
     print('avg. through put (kB per frame)',
-          throughput / len(packets_0) * 3)
-    print(qr.qr_block_size)
+          throughput / len(packets_0) * emb.capacity_multiplier)
 
 
-def test_qr():
-    qr = QRCode(max_code_size=600, version=30, depth=1, color_space='RGB',
-                channels=[], alpha=0.5)
-    qr_sync = QRCode(max_code_size=200, version=5, mode='binary',
-                     tlx=0, tly=600, depth=1, color_space='RGB',
-                     channels=[])
-    ps0 = [get_unit_packet() for _ in range(qr.capacity)]
+def test_0(emb, emb_sync):
     n0 = 'test_frame.png'
     n1 = 'test_frame_encoded.png'
+    ps0 = [get_unit_packet() for _ in range(emb.capacity)]
     inputs = ((n0, n1, ps0, n0), None)
-    _encode_sync(qr, qr_sync, inputs)
-    pid, ps1 = _decode_sync(qr, qr_sync, (n1, None))
-    print(pid)
-    print([x == y for x, y in zip(ps0, ps1)])
+    _encode_sync(emb, emb_sync, inputs)
+    pid, ps1 = _decode_sync(emb, emb_sync, (n1, None))
+    print(sum([x == y for x, y in zip(ps0, ps1)]) / len(ps0))
 
 
-def test_simple():
-    code = SimpleCode(alpha=0.4)
-    frame = Image.open('test_frame.png')
-    ps0 = [get_unit_packet() for _ in range(code.capacity)]
-    encoded = code.encode(frame, ps0)
-    encoded.show()
+def test_1(emb, emb_sync):
+    names = sorted(os.listdir(frames_dir))
+    names = [x for x in names if x.endswith('.png')][:30]
+    ps0, ps1 = [], []
+    match = 0
+    total = 0
+    for name in tqdm(names):
+        n0 = os.path.join('encoded_frames', name)
+        n1 = os.path.join('decoded_frames', name)
+        f0 = Image.open(n0)
+        f1 = Image.open(n1)
+        p0 = emb.decode(f0)
+        p1 = emb.decode(f1)
+        total += len(p0)
+        match += sum(x == y for x, y in zip(p0, p1))
+    print(match / total)
 
 
-test_simple()
+def test_2(emb, emb_sync):
+    n0 = 'test_frame.png'
+    n1 = 'test_frame_encoded.png'
+    ps0 = [get_unit_packet() for _ in range(emb.capacity)]
+    inputs = ((n0, n1, ps0, n0), None)
+    _encode_sync(emb, emb_sync, inputs)
+    f0 = Image.open(n0)
+    f1 = Image.open(n1)
+    ps2 = emb.decode(f1, f0)
+    print(sum([x == y for x, y in zip(ps0, ps2)]) / len(ps0))
+
+
+# emb = QRCode(
+#         max_code_size=600,
+#         depth=1, color_space='RGB', channels=[], alpha=0.4,
+#         version=30)
+
+emb = SimpleCode(code_size=(600, 600), block_size=4,
+                 depth=1, channels=[0], color_space='YCbCr', alpha=0.4)
+
+emb_sync = QRCode(
+        tlx=0, tly=600, max_code_size=200,
+        depth=1, color_space='RGB', channels=[],
+        version=5, mode='binary')
+
+# test_0(emb, emb_sync)
+# test_2(emb, emb_sync)
+main(emb, emb_sync, video=True)
+# test_1(emb, emb_sync)
