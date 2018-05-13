@@ -316,7 +316,8 @@ def _encode(mapper, inputs):
     frame = Image.open(input_path)
     frame = mapper.encode(frame, packets)
     frame.save(output_path, 'PNG')
-    queue.put(0)
+    if queue is not None:
+        queue.put(0)
 
 def _encode_sync(emb, emb_sync, inputs):
     (input_path, output_path, packets, pid), queue = inputs
@@ -324,14 +325,16 @@ def _encode_sync(emb, emb_sync, inputs):
     frame = emb.encode(frame, packets)
     frame = emb_sync.encode(frame, [pid])
     frame.save(output_path, 'PNG')
-    queue.put(0)
+    if queue is not None:
+        queue.put(0)
 
 
 def _decode(mapper, inputs):
     input_path, queue = inputs
     frame = Image.open(input_path)
     packets = mapper.decode(frame)
-    queue.put(0)
+    if queue is not None:
+        queue.put(0)
     return packets
 
 
@@ -339,8 +342,10 @@ def _decode_sync(emb, emb_sync, inputs):
     input_path, queue = inputs
     frame = Image.open(input_path)
     pid = emb_sync.decode(frame)[0]
-    packets = emb.decode(frame)
-    queue.put(0)
+    real_frame = Image.open(pid)
+    packets = emb.decode(frame, real_frame)
+    if queue is not None:
+        queue.put(0)
     return pid, packets
 
 
@@ -382,7 +387,7 @@ def main():
     os.makedirs(decoded_dir, exist_ok=True)
 
     qr = QR(max_code_size=600, version=30, depth=1, color_space='RGB',
-            channels=[])
+            channels=[], alpha=0.5)
 
     qr_sync = QR(max_code_size=200, version=5, mode='binary',
             tlx=0, tly=600, depth=1, color_space='RGB',
@@ -390,14 +395,14 @@ def main():
 
     names = sorted(os.listdir(frames_dir))
     names = [x for x in names if x.endswith('.png')][:30]
+    in_dirs = [os.path.join(frames_dir, x) for x in names]
     packets = [[get_unit_packet() for _ in range(qr.capacity)] 
                  for _ in names]
-    packets_0 = {i: x for i, x in zip(names, packets)}
+    packets_0 = {i: x for i, x in zip(in_dirs, packets)}
 
     # encode data
-    indirs = [os.path.join(frames_dir, x) for x in names]
-    outdirs = [os.path.join(encoded_dir, x) for x in names]
-    inputs = list(zip(indirs, outdirs, packets, names))
+    enc_dirs = [os.path.join(encoded_dir, x) for x in names]
+    inputs = list(zip(in_dirs, enc_dirs, packets, in_dirs))
     worker = partial(_encode_sync, qr, qr_sync)
     _multiprocess(worker, inputs, info='encoding frames')
 
@@ -419,9 +424,9 @@ def main():
         ])
 
     # decode data
-    indirs = [os.path.join(decoded_dir, f) for f in names]
+    dec_dirs = [os.path.join(decoded_dir, f) for f in names]
     worker = partial(_decode_sync, qr, qr_sync)
-    results = _multiprocess(worker, indirs, info='decoding frames')
+    results = _multiprocess(worker, dec_dirs, info='decoding frames')
     names_decoded, packets_1 = list(map(list, zip(*results)))
     packets_1 = {i: x for i, x in zip(names_decoded, packets_1)}
 
@@ -444,17 +449,26 @@ def main():
           throughput / len(packets_0) * 3)
 
 
-# qr = QR(max_code_size=600, version=10, depth=3, color_space='RGB',
-#         channels=[0, 1, 2])
-# packets = [get_unit_packet() for _ in range(qr.capacity)]
-# original = Image.open('test_frame.png')
-# encoded = qr.encode(original, packets)
-# encoded.show()
-# 
-# qr_sync = QR(max_code_size=200, version=5, tlx=0, tly=600, depth=1,
-#         color_space='RGB', channels=[])
+qr = QR(max_code_size=600, version=30, depth=1, color_space='RGB',
+        channels=[], alpha=0.5)
+
+qr_sync = QR(max_code_size=200, version=5, mode='binary',
+             tlx=0, tly=600, depth=1, color_space='RGB',
+             channels=[])
+
+ps0 = [get_unit_packet() for _ in range(qr.capacity)]
+
+n0 = 'test_frame.png'
+n1 = 'test_frame_encoded.png'
+inputs = (('test_frame.png', 'test_frame_encoded.png', ps0,
+    'test_frame.png'), None)
+_encode_sync(qr, qr_sync, inputs)
+pid, ps1 = _decode_sync(qr, qr_sync, ('test_frame_encoded.png', None))
+print(pid)
+print([x == y for x, y in zip(ps0, ps1)])
+
 # encoded = qr_sync.encode(encoded_dir, ['123198273'])
 # encoded.show()
 # print(qr_sync.decode(encoded))
 
-main()
+# main()
