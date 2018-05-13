@@ -237,6 +237,7 @@ class QR(Embedding):
         if true_frame is not None:
             true_frame = np.array(true_frame.convert(self.color_space))
             frame = (frame - true_frame * (1 - self.alpha)) / self.alpha
+            frame = np.clip(frame, 0, 255)
             frame = np.uint8(frame)
         # crop out the code
         frame = frame[self.tlx: self.tlx + self.qr_code_size,
@@ -319,6 +320,7 @@ def _encode(mapper, inputs):
     if queue is not None:
         queue.put(0)
 
+
 def _encode_sync(emb, emb_sync, inputs):
     (input_path, output_path, packets, pid), queue = inputs
     frame = Image.open(input_path)
@@ -390,14 +392,14 @@ def main():
             channels=[], alpha=0.5)
 
     qr_sync = QR(max_code_size=200, version=5, mode='binary',
-            tlx=0, tly=600, depth=1, color_space='RGB',
-            channels=[])
+                 tlx=0, tly=600, depth=1, color_space='RGB',
+                 channels=[])
 
     names = sorted(os.listdir(frames_dir))
     names = [x for x in names if x.endswith('.png')][:30]
     in_dirs = [os.path.join(frames_dir, x) for x in names]
-    packets = [[get_unit_packet() for _ in range(qr.capacity)] 
-                 for _ in names]
+    packets = [[get_unit_packet() for _ in range(qr.capacity)]
+               for _ in names]
     packets_0 = {i: x for i, x in zip(in_dirs, packets)}
 
     # encode data
@@ -460,10 +462,9 @@ ps0 = [get_unit_packet() for _ in range(qr.capacity)]
 
 n0 = 'test_frame.png'
 n1 = 'test_frame_encoded.png'
-inputs = (('test_frame.png', 'test_frame_encoded.png', ps0,
-    'test_frame.png'), None)
+inputs = ((n0, n1, ps0, n0), None)
 _encode_sync(qr, qr_sync, inputs)
-pid, ps1 = _decode_sync(qr, qr_sync, ('test_frame_encoded.png', None))
+pid, ps1 = _decode_sync(qr, qr_sync, (n1, None))
 print(pid)
 print([x == y for x, y in zip(ps0, ps1)])
 
