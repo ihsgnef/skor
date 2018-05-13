@@ -1,8 +1,10 @@
 import os
 import sys
 import time
+import json
 import random
 import numpy as np
+import itertools
 import subprocess
 from tqdm import tqdm
 from PIL import Image
@@ -211,7 +213,7 @@ class SimpleCode(BlockCode):
 
 class QRCode(BlockCode):
 
-    def __init__(self, tlx=0, tly=0, max_code_size=400,
+    def __init__(self, tlx=0, tly=0, max_code_size=600,
                  depth=4, channels=[], color_space='RGB', alpha=1,
                  version=10, error='L', mode='numeric'):
         '''
@@ -390,15 +392,20 @@ def _multiprocess(worker, inputs, info=''):
     inputs = [(x, queue) for x in inputs]
     result = pool.map_async(worker, inputs)
     # monitor loop
+
     while not result.ready():
         size = queue.qsize()
-        sys.stderr.write(output.format(info, size, total_size))
+        if info != '':
+            sys.stderr.write(output.format(info, size, total_size))
         time.sleep(0.1)
-    sys.stderr.write('\n')
+    if info != '':
+        sys.stderr.write('\n')
     return result.get()
 
 
 def main(emb, emb_sync, video=False):
+    FNULL = open(os.devnull, 'w')
+
     if not os.path.isdir(frames_dir):
         os.makedirs(frames_dir)
         print('generating initial frames')
@@ -409,7 +416,8 @@ def main(emb, emb_sync, video=False):
             os.path.join(frames_dir, 'image-%04d.png')
             ])
 
-    subprocess.call(['rm', 'temp.webm'])
+    subprocess.call(['rm', 'temp.webm'],
+                    stdout=FNULL, stderr=subprocess.STDOUT)
     if os.path.isdir(encoded_dir):
         subprocess.call(['rm', '-r', 'encoded_frames'])
     if os.path.isdir(decoded_dir):
@@ -429,9 +437,10 @@ def main(emb, emb_sync, video=False):
     enc_dirs = [os.path.join(encoded_dir, x) for x in names]
     inputs = list(zip(in_dirs, enc_dirs, packets, in_dirs))
     worker = partial(_encode_sync, emb, emb_sync)
-    _multiprocess(worker, inputs, info='encoding frames')
+    _multiprocess(worker, inputs)
 
     if video:
+
         # video encoding and decoding
         print('ffmpeg encoding')
         subprocess.call([
@@ -439,7 +448,8 @@ def main(emb, emb_sync, video=False):
            os.path.join(encoded_dir, 'image-%04d.png'),
            '-c:v', 'libvpx',
            'temp.webm'
-           ])
+           ],
+           stdout=FNULL, stderr=subprocess.STDOUT)
 
         print('ffmpeg decoding')
         subprocess.call([
@@ -447,7 +457,8 @@ def main(emb, emb_sync, video=False):
             'temp.webm',
             '-vf', 'scale=800:600',
             os.path.join(decoded_dir, 'image-%04d.png')
-            ])
+            ],
+            stdout=FNULL, stderr=subprocess.STDOUT)
 
     # decode data
     if video:
@@ -455,7 +466,7 @@ def main(emb, emb_sync, video=False):
     else:
         dec_dirs = [os.path.join(encoded_dir, f) for f in names]
     worker = partial(_decode_sync, emb, emb_sync)
-    results = _multiprocess(worker, dec_dirs, info='decoding frames')
+    results = _multiprocess(worker, dec_dirs)
     names_decoded, packets_1 = list(map(list, zip(*results)))
     packets_1 = {i: x for i, x in zip(names_decoded, packets_1)}
 
@@ -471,11 +482,9 @@ def main(emb, emb_sync, video=False):
         acc += len(ok)
         sum_len += len(p0)
         throughput += len(ok) * unit_packet_size / 8000
-
-    print()
-    print('avg. packet recovery rate', acc / sum_len)
-    print('avg. through put (kB per frame)',
-          throughput / len(packets_0) * emb.capacity_multiplier)
+    acc /= sum_len
+    throughput = throughput / len(packets_0) * emb.capacity_multiplier
+    return acc, throughput
 
 
 def test_0(emb, emb_sync):
@@ -488,50 +497,58 @@ def test_0(emb, emb_sync):
     print(sum([x == y for x, y in zip(ps0, ps1)]) / len(ps0))
 
 
-def test_1(emb, emb_sync):
-    names = sorted(os.listdir(frames_dir))
-    names = [x for x in names if x.endswith('.png')][:30]
-    ps0, ps1 = [], []
-    match = 0
-    total = 0
-    for name in tqdm(names):
-        n0 = os.path.join('encoded_frames', name)
-        n1 = os.path.join('decoded_frames', name)
-        f0 = Image.open(n0)
-        f1 = Image.open(n1)
-        p0 = emb.decode(f0)
-        p1 = emb.decode(f1)
-        total += len(p0)
-        match += sum(x == y for x, y in zip(p0, p1))
-    print(match / total)
-
-
-def test_2(emb, emb_sync):
-    n0 = 'test_frame.png'
-    n1 = 'test_frame_encoded.png'
-    ps0 = [get_unit_packet() for _ in range(emb.capacity)]
-    inputs = ((n0, n1, ps0, n0), None)
-    _encode_sync(emb, emb_sync, inputs)
-    f0 = Image.open(n0)
-    f1 = Image.open(n1)
-    ps2 = emb.decode(f1, f0)
-    print(sum([x == y for x, y in zip(ps0, ps2)]) / len(ps0))
-
-
 # emb = QRCode(
 #         max_code_size=600,
 #         depth=1, color_space='RGB', channels=[], alpha=0.4,
 #         version=30)
 
-emb = SimpleCode(code_size=(600, 600), block_size=4,
-                 depth=1, channels=[0], color_space='YCbCr', alpha=0.4)
+simple_params = {
+    'block_size': [2, 4, 6, 8, 10],
+    'depth': [1, 2, 4],
+    'channels': [[], [0], [0, 1], [0, 1, 2], [0, 2]],
+    'color_space': ['RGB', 'YCbCr'],
+    'alpha': [1, 0.8, 0.6, 0.4]
+    }
 
-emb_sync = QRCode(
-        tlx=0, tly=600, max_code_size=200,
-        depth=1, color_space='RGB', channels=[],
-        version=5, mode='binary')
+qr_params = {
+    'depth': [1, 2, 4],
+    'channels': [[], [0], [0, 1], [0, 1, 2], [0, 2]],
+    'color_space': ['RGB', 'YCbCr'],
+    'alpha': [1, 0.8, 0.6, 0.4],
+    'version': [10, 20, 30]
+    }
 
-# test_0(emb, emb_sync)
-# test_2(emb, emb_sync)
-main(emb, emb_sync, video=True)
-# test_1(emb, emb_sync)
+
+def sweep_simple():
+    results = open('sweep_simple.txt', 'w')
+    results.write('\n\n\n')
+    all_params = list(itertools.product(*simple_params.values()))
+    start = time.time()
+    for i, params in enumerate(all_params):
+        now = time.time()
+        params = dict(zip(simple_params.keys(), params))
+        eta = (now - start) * len(all_params) / i if i > 0 else 0
+        h = int(eta // 3600)
+        m = int((eta - 3600 * h) // 60)
+        print('{} / {}, {}:{}:{}'.format(i, len(all_params), h, m, 0))
+        print(params)
+        emb = SimpleCode(**params)
+        emb_sync = QRCode(
+                tlx=0, tly=600, max_code_size=200,
+                depth=1, color_space='RGB', channels=[],
+                version=5, mode='binary')
+        acc, tp = main(emb, emb_sync, video=True)
+        entry = {'params': params, 'recovery_rate': acc, 'throughput': tp}
+        results.write(json.dumps(entry) + '\n')
+        results.flush()
+        print(acc, tp)
+        print()
+        print()
+
+# acc, tp = main(emb, emb_sync, video=True)
+# print()
+# print('avg. packet recovery rate', acc)
+# print('avg. through put (kB per frame)', tp)
+
+
+sweep_simple()
