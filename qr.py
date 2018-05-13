@@ -386,7 +386,7 @@ def _decode_sync(emb, emb_sync, inputs):
 def _multiprocess(worker, inputs, info=''):
     total_size = len(inputs)
     output = '\r[{0}] done: {1}/{2}'
-    pool = Pool(8)
+    pool = Pool(4)
     manager = Manager()
     queue = manager.Queue()
     inputs = [(x, queue) for x in inputs]
@@ -519,15 +519,15 @@ qr_params = {
     }
 
 
-def sweep_simple():
-    results = open('sweep_simple.txt', 'w')
+def param_sweep(param_dict, outfile):
+    results = open(outfile, 'w')
     results.write('\n\n\n')
-    all_params = list(itertools.product(*simple_params.values()))
+    all_params = list(itertools.product(*param_dict.values()))
     start = time.time()
     for i, params in enumerate(all_params):
         now = time.time()
-        params = dict(zip(simple_params.keys(), params))
-        eta = (now - start) * len(all_params) / i if i > 0 else 0
+        params = dict(zip(param_dict.keys(), params))
+        eta = (now - start) * (len(all_params) - i) / i if i > 0 else 0
         h = int(eta // 3600)
         m = int((eta - 3600 * h) // 60)
         print('{} / {}, {}:{}:{}'.format(i, len(all_params), h, m, 0))
@@ -551,4 +551,5 @@ def sweep_simple():
 # print('avg. through put (kB per frame)', tp)
 
 
-sweep_simple()
+param_sweep(simple_params, 'sweep_simple.txt')
+param_sweep(qr_params, 'sweep_qr.txt')
