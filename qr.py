@@ -386,7 +386,7 @@ def _decode_sync(emb, emb_sync, inputs):
 def _multiprocess(worker, inputs, info=''):
     total_size = len(inputs)
     output = '\r[{0}] done: {1}/{2}'
-    pool = Pool(4)
+    pool = Pool(8)
     manager = Manager()
     queue = manager.Queue()
     inputs = [(x, queue) for x in inputs]
