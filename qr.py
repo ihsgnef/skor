@@ -7,7 +7,6 @@ import subprocess
 from PIL import Image
 from functools import partial
 from multiprocessing import Pool, Manager
-from abc import ABCMeta, abstractmethod
 import pyqrcode
 from pyzbar.pyzbar import decode as qr_decode
 
@@ -44,88 +43,9 @@ def blockshaped(arr, nrows, ncols):
                .reshape(-1, nrows, ncols))
 
 
-class Embedding(metaclass=ABCMeta):
-
-    '''A embedding supports encoding and decoding data into and from a
-    frame.
+class BlockCode:
+    '''A embedding that is based on color blocks.
     '''
-
-    @abstractmethod
-    def encode(frame, packets, *args, **kwargs):
-        '''Encode given message into the frame
-
-        Args:
-            frame: a PIL.Image (RGB) object
-            packets: list of packets to encode
-
-        Returns:
-            frame: the frame with data encoded
-        '''
-        pass
-
-    @abstractmethod
-    def decode(frame, *args, **kwargs):
-        '''Decode data from a frame
-
-        Args:
-            frame: a PIL.Image (RGB) object
-
-        Return:
-            packets: decoded packets, None if decoding failed
-        '''
-        pass
-
-
-class QR(Embedding):
-
-    def __init__(self, max_code_size=400,
-                 tlx=0, tly=0,
-                 version=10, error='L', mode='numeric',
-                 depth=4, channels=[], color_space='RGB',
-                 alpha=1):
-        '''
-        Args:
-            max_code_size: maximum allowed code size in pixels
-            tlx, tly: top left corner
-            version, error, mode: QR parameters
-            depth: number of bits to encode in each block and channel
-            channel: indices of channels to embed data, tie channels if empty
-            color_space: embed in what color space
-            alpha: transparency of embedding, for all channels, 1 is opaque
-        '''
-        self.qr_params = {'error': error, 'version': version, 'mode': mode}
-        self.depth = depth
-        self.color_space = color_space
-        self.channels = channels
-        self.alpha = alpha
-        self.tlx = tlx
-        self.tly = tly
-
-        # determine pixel size of code
-        self.qr_array_size = get_qr_array_size(self.qr_params)
-        self.qr_block_size = max_code_size // self.qr_array_size
-        self.qr_code_size = self.qr_array_size * self.qr_block_size
-
-        # determine capacity in unit size messages
-        max_packet_size = get_qr_packet_size(self.qr_params)
-        self.n_channels = 1 if len(channels) == 0 else len(channels)
-        self.capacity = max_packet_size // unit_packet_size
-        self.capacity *= self.depth * self.n_channels
-        self.packet_size = max_packet_size // unit_packet_size
-        self.packet_size *= unit_packet_size
-
-    def get_qr_array(self, m):
-        '''Get two dimensional QR array for a message string.
-
-        Args:
-            m: the message to be encoded
-        Returns:
-            qr: 2D numpy array
-        '''
-        qr = pyqrcode.create(m, **self.qr_params)
-        qr = qr.text().split('\n')[:-1]
-        qr = np.array([[1 - int(z) for z in x] for x in qr])
-        return qr
 
     def pack_packets(self, packets):
         '''split packets into channels then depth'''
@@ -184,6 +104,126 @@ class QR(Embedding):
             frame //= 2
         return fs
 
+
+class SimpleCode(BlockCode):
+
+    def __init__(self, tlx=0, tly=0, code_size=(600, 600), block_size=4,
+                 depth=1, channels=[], color_space='RGB', alpha=1):
+        self.depth = depth
+        self.color_space = color_space
+        self.channels = channels
+        self.n_channels = 1 if len(channels) == 0 else len(channels)
+        self.alpha = alpha
+        self.tlx = tlx
+        self.tly = tly
+
+        h, w = code_size
+        self.block_size = block_size
+        self.code_size = code_size
+        self.array_size = (h // block_size, w // block_size)
+        self.frame_capacity = self.array_size[0] * self.array_size[1]
+        self.capacity = self.frame_capacity // unit_packet_size
+        self.capacity *= self.depth * self.n_channels
+
+    def get_code_array(self, msg):
+        '''convert binary string to code array'''
+        assert len(msg) == self.frame_capacity
+        msg = [int(x) for x in msg]
+        msg = np.array(msg).reshape(self.array_size)
+        return msg
+
+    def encode(self, frame, packets):
+        '''Encode message in a frame by overlay the QR code on top.
+
+        Args:
+            frame: PIL image object in RGB mode
+            packets: list of packets to be encoded
+        '''
+        # get QR code for each channel and depth
+        packets = self.pack_packets(packets)
+        channels = []
+        for i in range(self.n_channels):
+            qs = []
+            for j in range(self.depth):
+                # merge across depth
+                qs.append(self.get_code_array(packets[i][j]))
+            q = self.bucketize(qs)
+            # scale
+            # q = np.kron(q, np.ones((self.qr_block_size, self.qr_block_size)))
+            q = np.repeat(q, self.block_size*np.ones(q.shape[0], np.int), 0)
+            q = np.repeat(q, self.block_size*np.ones(q.shape[1], np.int), 1)
+            assert q.shape == self.code_size
+            channels.append(q)
+        background = frame.convert(self.color_space)
+        foreground = np.array(background)
+        if len(self.channels) == 0:
+            # put same data to all channels
+            cnl = np.repeat(channels[0][:, :, np.newaxis], 3, axis=2)
+            foreground[self.tlx: self.tlx + self.code_size[0],
+                       self.tly: self.tly + self.code_size[1], :] = cnl
+        else:
+            # put data to corresponding channels
+            for i, c in enumerate(self.channels):
+                cnl = channels[i]
+                foreground[self.tlx: self.tlx + self.code_size[0],
+                           self.tly: self.tly + self.code_size[1], :] = cnl
+
+        background = np.array(background)
+        blended = foreground * self.alpha + background * (1 - self.alpha)
+        blended = Image.fromarray(np.uint8(blended), self.color_space)
+        blended = blended.convert('RGB')
+        return blended
+
+
+class QRCode(BlockCode):
+
+    def __init__(self, tlx=0, tly=0, max_code_size=400,
+                 depth=4, channels=[], color_space='RGB', alpha=1,
+                 version=10, error='L', mode='numeric'):
+        '''
+        Args:
+            max_code_size: maximum allowed code size in pixels
+            tlx, tly: top left corner
+            version, error, mode: QR parameters
+            depth: number of bits to encode in each block and channel
+            channel: indices of channels to embed data, tie channels if empty
+            color_space: embed in what color space
+            alpha: transparency of embedding, for all channels, 1 is opaque
+        '''
+        self.qr_params = {'error': error, 'version': version, 'mode': mode}
+        self.depth = depth
+        self.color_space = color_space
+        self.channels = channels
+        self.alpha = alpha
+        self.tlx = tlx
+        self.tly = tly
+
+        # determine pixel size of code
+        self.qr_array_size = get_qr_array_size(self.qr_params)
+        self.qr_block_size = max_code_size // self.qr_array_size
+        self.qr_code_size = self.qr_array_size * self.qr_block_size
+
+        # determine capacity in unit size messages
+        max_packet_size = get_qr_packet_size(self.qr_params)
+        self.n_channels = 1 if len(channels) == 0 else len(channels)
+        self.capacity = max_packet_size // unit_packet_size
+        self.capacity *= self.depth * self.n_channels
+        self.frame_capacity = max_packet_size // unit_packet_size
+        self.frame_capacity *= unit_packet_size
+
+    def get_qr_array(self, m):
+        '''Get two dimensional QR array for a message string.
+
+        Args:
+            m: the message to be encoded
+        Returns:
+            qr: 2D numpy array
+        '''
+        qr = pyqrcode.create(m, **self.qr_params)
+        qr = qr.text().split('\n')[:-1]
+        qr = np.array([[1 - int(z) for z in x] for x in qr])
+        return qr
+
     def encode(self, frame, packets):
         '''Encode message in a frame by overlay the QR code on top.
 
@@ -217,16 +257,13 @@ class QR(Embedding):
             # put data to corresponding channels
             for i, c in enumerate(self.channels):
                 cnl = channels[i]
-                foreground[:self.qr_code_size, :self.qr_code_size, c] = cnl
+                foreground[self.tlx: self.tlx + self.qr_code_size,
+                           self.tly: self.tly + self.qr_code_size, :] = cnl
 
         background = np.array(background)
         blended = foreground * self.alpha + background * (1 - self.alpha)
         blended = Image.fromarray(np.uint8(blended), self.color_space)
         blended = blended.convert('RGB')
-
-        # foreground = Image.fromarray(np.uint8(foreground), self.color_space)
-        # blended = Image.blend(background, foreground, self.alpha)
-        # blended = blended.convert('RGB')
         return blended
 
     def decode(self, frame, true_frame=None):
@@ -263,53 +300,11 @@ class QR(Embedding):
                 q = Image.fromarray(np.uint8(q), 'RGB')
                 m = qr_decode(q)
                 if len(m) == 0:
-                    m = '0' * self.packet_size
+                    m = '0' * self.frame_capacity
                 else:
                     m = m[0].data.decode('utf-8')
                 packets[-1].append(m)
         return self.unpack_packets(packets)
-
-    def average_blocks(self, frame):
-        ''' take a frame and map each block to one color according to
-        the average.  this is an in place function. The qr is assumed
-        to be starting at the top right of the frame.
-
-        Args:
-            frame: PIL image object
-        '''
-
-        side_len_blocks = (self.qr_params['version'] - 1) * 4 + 21 + 8
-        if self.qr_size[0] == self.qr_size[1]:
-
-            if self.qr_size[0] % side_len_blocks == 0:
-                block_size_px = int(self.qr_size[0] / side_len_blocks)
-            else:
-                raise ValueError('qr not properly scaled')
-
-        else:
-            raise ValueError('qr not square')
-
-        for x in range(side_len_blocks):
-            for y in range(side_len_blocks):
-                # get block average
-                sum = 0
-                for i in range(x * block_size_px, (x+1) * block_size_px):
-                    for j in range(y * block_size_px, (y+1) * block_size_px):
-                        temp_px = frame.getpixel((i, j))
-                        sum += (temp_px[0] + temp_px[1] + temp_px[2])/3
-                avg = sum / (block_size_px**2)
-                if avg > 127.5:
-                    avg = 255
-                else:
-                    avg = 0
-
-                # set each block
-                for i in range(x * block_size_px, (x+1) * block_size_px):
-                    for j in range(y * block_size_px, (y+1) * block_size_px):
-                        frame.putpixel((i, j), (avg, avg, avg))
-
-        # if random() < 0.1:
-        #     frame.show()
 
 
 def _encode(mapper, inputs):
@@ -388,12 +383,15 @@ def main():
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
 
-    qr = QR(max_code_size=600, version=30, depth=1, color_space='RGB',
-            channels=[], alpha=0.5)
+    qr = QRCode(
+            max_code_size=600,
+            depth=1, color_space='RGB', channels=[], alpha=0.4,
+            version=30)
 
-    qr_sync = QR(max_code_size=200, version=5, mode='binary',
-                 tlx=0, tly=600, depth=1, color_space='RGB',
-                 channels=[])
+    qr_sync = QRCode(
+            tlx=0, tly=600, max_code_size=200,
+            depth=1, color_space='RGB', channels=[],
+            version=5, mode='binary')
 
     names = sorted(os.listdir(frames_dir))
     names = [x for x in names if x.endswith('.png')][:30]
@@ -447,29 +445,33 @@ def main():
 
     print()
     print('avg. packet recovery rate', acc / sum_len)
-    print('avg. through put (kB per frame)', 
+    print('avg. through put (kB per frame)',
           throughput / len(packets_0) * 3)
+    print(qr.qr_block_size)
 
 
-qr = QR(max_code_size=600, version=30, depth=1, color_space='RGB',
-        channels=[], alpha=0.5)
+def test_qr():
+    qr = QRCode(max_code_size=600, version=30, depth=1, color_space='RGB',
+                channels=[], alpha=0.5)
+    qr_sync = QRCode(max_code_size=200, version=5, mode='binary',
+                     tlx=0, tly=600, depth=1, color_space='RGB',
+                     channels=[])
+    ps0 = [get_unit_packet() for _ in range(qr.capacity)]
+    n0 = 'test_frame.png'
+    n1 = 'test_frame_encoded.png'
+    inputs = ((n0, n1, ps0, n0), None)
+    _encode_sync(qr, qr_sync, inputs)
+    pid, ps1 = _decode_sync(qr, qr_sync, (n1, None))
+    print(pid)
+    print([x == y for x, y in zip(ps0, ps1)])
 
-qr_sync = QR(max_code_size=200, version=5, mode='binary',
-             tlx=0, tly=600, depth=1, color_space='RGB',
-             channels=[])
 
-ps0 = [get_unit_packet() for _ in range(qr.capacity)]
+def test_simple():
+    code = SimpleCode(alpha=0.4)
+    frame = Image.open('test_frame.png')
+    ps0 = [get_unit_packet() for _ in range(code.capacity)]
+    encoded = code.encode(frame, ps0)
+    encoded.show()
 
-n0 = 'test_frame.png'
-n1 = 'test_frame_encoded.png'
-inputs = ((n0, n1, ps0, n0), None)
-_encode_sync(qr, qr_sync, inputs)
-pid, ps1 = _decode_sync(qr, qr_sync, (n1, None))
-print(pid)
-print([x == y for x, y in zip(ps0, ps1)])
 
-# encoded = qr_sync.encode(encoded_dir, ['123198273'])
-# encoded.show()
-# print(qr_sync.decode(encoded))
-
-# main()
+test_simple()
