@@ -1,0 +1,10 @@
+
+
+
+{"params": {"block_size": 2, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.18244444444444444, "throughput": 2.0525}
+{"params": {"block_size": 2, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.26725925925925925, "throughput": 3.006666666666667}
+{"params": {"block_size": 2, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.16114814814814815, "throughput": 1.8129166666666667}
+{"params": {"block_size": 2, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.04637037037037037, "throughput": 0.5216666666666667}
+{"params": {"block_size": 2, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.027444444444444445, "throughput": 0.30875}
+{"params": {"block_size": 2, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.014148148148148148, "throughput": 0.15916666666666665}
+{"params": {"block_size": 2, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.001814814814814815, "throughput": 0.02041666666666667}

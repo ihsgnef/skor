@@ -6,7 +6,6 @@ import random
 import numpy as np
 import itertools
 import subprocess
-from tqdm import tqdm
 from PIL import Image
 from functools import partial
 from multiprocessing import Pool, Manager
@@ -36,7 +35,6 @@ def blockshaped(arr, nrows, ncols):
     """
     Return an array of shape (n, nrows, ncols) where
     n * nrows * ncols = arr.size
-
     If arr is a 2D array, the returned array should look like n subblocks with
     each subblock preserving the "physical" layout of arr.
     """
@@ -138,7 +136,6 @@ class SimpleCode(BlockCode):
 
     def encode(self, frame, packets):
         '''Encode message in a frame by overlay the QR code on top.
-
         Args:
             frame: PIL image object in RGB mode
             packets: list of packets to be encoded
@@ -250,7 +247,6 @@ class QRCode(BlockCode):
 
     def get_qr_array(self, m):
         '''Get two dimensional QR array for a message string.
-
         Args:
             m: the message to be encoded
         Returns:
@@ -263,7 +259,6 @@ class QRCode(BlockCode):
 
     def encode(self, frame, packets):
         '''Encode message in a frame by overlay the QR code on top.
-
         Args:
             frame: PIL image object in RGB mode
             packets: list of packets to be encoded
@@ -383,7 +378,10 @@ def _decode_sync(emb, emb_sync, inputs):
     return pid, packets
 
 
-def _multiprocess(worker, inputs, info=''):
+def _multiprocess(worker, inputs, info='', multi=False):
+    if not multi:
+        return [worker((x, None)) for x in inputs]
+
     total_size = len(inputs)
     output = '\r[{0}] done: {1}/{2}'
     pool = Pool(8)
@@ -552,4 +550,4 @@ def param_sweep(param_dict, outfile):
 
 
 param_sweep(simple_params, 'sweep_simple.txt')
-param_sweep(qr_params, 'sweep_qr.txt')
+# param_sweep(qr_params, 'sweep_qr.txt')

@@ -20,8 +20,8 @@ decoded_dir = 'decoded_frames'
 # putting these in global because I don't want to pass them around
 frame_size = (600, 800)
 frame_rate = 24
-block_size = 4*4 #assume square for now
-block_length = 4 #remember to change this too when changing block_size
+block_size = 12*12 #assume square for now
+block_length = 12 #remember to change this too when changing block_size
 
 
 class Embedding(metaclass=ABCMeta):
@@ -166,7 +166,7 @@ class COLOR_BLOCK_3(Embedding):
                         for j in range(y * block_length, (y+1) * block_length):
                             temp_px = frame.getpixel((i, j))
                             sum += temp_px[color]
-                    avg = sum / (block_length**2)
+                    avg = sum / (block_size)
                     if avg > 127.5:
                         ms.append("1")
                     else:
@@ -175,7 +175,7 @@ class COLOR_BLOCK_3(Embedding):
 
 
 def basic_test():
-    frame = Image.open('test_frame2.png')
+    frame = Image.open('test_frame.png')
     mapper = COLOR_BLOCK_3(block_size)
     print ('COLOR_BLOCK_3 with block size of ', block_size)
     m0=get_max_msg(mapper)
@@ -242,51 +242,56 @@ def _multiprocess(worker, inputs, info=''):
 
 def main():
     # basic_test()
-    print ('COLOR_BLOCK_3 with block size of ', block_size)
-    if not os.path.isdir(frames_dir):
-        os.makedirs(frames_dir)
-        print('generating initial frames')
+    for i in range(8, 20):
+        global block_size
+        block_size = i*i
+        global block_length
+        block_length = i
+        print ('COLOR_BLOCK_1 with block size of ', block_size)
+        if not os.path.isdir(frames_dir):
+            os.makedirs(frames_dir)
+            print('generating initial frames')
+            subprocess.call([
+                'ffmpeg', '-i',
+                'rms.webm',
+                '-vf', 'scale=800:600',
+                os.path.join(frames_dir, 'image-%04d.png')
+                ])
+        os.makedirs(encoded_dir, exist_ok=True)
+        os.makedirs(decoded_dir, exist_ok=True)
+        mapper = COLOR_BLOCK_1(block_size)
+        ms0 = encode_all(mapper, frames_dir, encoded_dir)
+
+        print('ffmpeg encoding')
+        subprocess.call(["rm", "temp.webm"])
+        subprocess.call([
+           'ffmpeg', '-i',
+           os.path.join(encoded_dir, 'image-%04d.png'),
+           "-c:v", "libvpx",
+           "temp.webm"
+           ])
+
+        print('ffmpeg decoding')
         subprocess.call([
             'ffmpeg', '-i',
-            'rms.webm',
+            'temp.webm',
             '-vf', 'scale=800:600',
-            os.path.join(frames_dir, 'image-%04d.png')
+            os.path.join(decoded_dir, 'image-%04d.png')
             ])
-    os.makedirs(encoded_dir, exist_ok=True)
-    os.makedirs(decoded_dir, exist_ok=True)
-    mapper = COLOR_BLOCK_3(block_size)
-    ms0 = encode_all(mapper, frames_dir, encoded_dir)
 
-    print('ffmpeg encoding')
-    subprocess.call(["rm", "temp.webm"])
-    subprocess.call([
-       'ffmpeg', '-i',
-       os.path.join(encoded_dir, 'image-%04d.png'),
-       "-c:v", "libvpx",
-       "temp.webm"
-       ])
+        ms1 = decode_all(mapper, decoded_dir)
 
-    print('ffmpeg decoding')
-    subprocess.call([
-        'ffmpeg', '-i',
-        'temp.webm',
-        '-vf', 'scale=800:600',
-        os.path.join(decoded_dir, 'image-%04d.png')
-        ])
-
-    ms1 = decode_all(mapper, decoded_dir)
-
-    acc = 0
-    throughput = 0
-    for k in ms0:
-        acc += ms0[k] == ms1[k]
-        if ms1[k] is not None:
-            match = int(ms0[k], 2) & int(ms1[k], 2)
-            throughput += '{:b}'.format(match).count('1')
-    print()
-    print('perfectly recovered {} of frames'.format(acc / len(ms0)))
-    print('through put (bps): {}'.format(
-        throughput / len(ms0) * frame_rate))
+        acc = 0
+        throughput = 0
+        for k in ms0:
+            acc += ms0[k] == ms1[k]
+            if ms1[k] is not None:
+                match = int(ms0[k], 2) & int(ms1[k], 2)
+                throughput += '{:b}'.format(match).count('1')
+        print()
+        print('perfectly recovered {} of frames with block size of {}'.format(acc / len(ms0), block_size))
+        print('through put (bps): {}'.format(
+            throughput / len(ms0) * frame_rate))
 
 
 if __name__ == '__main__':

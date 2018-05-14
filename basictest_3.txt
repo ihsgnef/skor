@@ -1,0 +1,57 @@
+COLOR_BLOCK_3 with block size of  1
+COLOR_BLOCK_3 with block size of  1
+True
+COLOR_BLOCK_3 with block size of  4
+COLOR_BLOCK_3 with block size of  4
+True
+COLOR_BLOCK_3 with block size of  9
+COLOR_BLOCK_3 with block size of  9
+True
+COLOR_BLOCK_3 with block size of  16
+COLOR_BLOCK_3 with block size of  16
+True
+COLOR_BLOCK_3 with block size of  25
+COLOR_BLOCK_3 with block size of  25
+True
+COLOR_BLOCK_3 with block size of  36
+COLOR_BLOCK_3 with block size of  36
+True
+COLOR_BLOCK_3 with block size of  49
+COLOR_BLOCK_3 with block size of  49
+True
+COLOR_BLOCK_3 with block size of  64
+COLOR_BLOCK_3 with block size of  64
+True
+COLOR_BLOCK_3 with block size of  81
+COLOR_BLOCK_3 with block size of  81
+True
+COLOR_BLOCK_3 with block size of  100
+COLOR_BLOCK_3 with block size of  100
+True
+COLOR_BLOCK_3 with block size of  121
+COLOR_BLOCK_3 with block size of  121
+True
+COLOR_BLOCK_3 with block size of  144
+COLOR_BLOCK_3 with block size of  144
+True
+COLOR_BLOCK_3 with block size of  169
+COLOR_BLOCK_3 with block size of  169
+True
+COLOR_BLOCK_3 with block size of  196
+COLOR_BLOCK_3 with block size of  196
+True
+COLOR_BLOCK_3 with block size of  225
+COLOR_BLOCK_3 with block size of  225
+True
+COLOR_BLOCK_3 with block size of  256
+COLOR_BLOCK_3 with block size of  256
+True
+COLOR_BLOCK_3 with block size of  289
+COLOR_BLOCK_3 with block size of  289
+True
+COLOR_BLOCK_3 with block size of  324
+COLOR_BLOCK_3 with block size of  324
+True
+COLOR_BLOCK_3 with block size of  361
+COLOR_BLOCK_3 with block size of  361
+True

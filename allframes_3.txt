@@ -1,0 +1,85 @@
+COLOR_BLOCK_3 with block size of  36
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.0 of frames with block size of 36
+through put (bps): 419673.9393939394
+COLOR_BLOCK_3 with block size of  49
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.0 of frames with block size of 49
+through put (bps): 314401.69696969696
+COLOR_BLOCK_3 with block size of  64
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.43434343434343436 of frames with block size of 64
+through put (bps): 269082.90909090906
+COLOR_BLOCK_3 with block size of  81
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.15151515151515152 of frames with block size of 81
+through put (bps): 199787.15151515152
+COLOR_BLOCK_3 with block size of  100
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.36363636363636365 of frames with block size of 100
+through put (bps): 167808.9696969697
+COLOR_BLOCK_3 with block size of  121
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.40404040404040403 of frames with block size of 121
+through put (bps): 137498.42424242423
+COLOR_BLOCK_3 with block size of  144
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.40404040404040403 of frames with block size of 144
+through put (bps): 118155.39393939395
+COLOR_BLOCK_3 with block size of  169
+COLOR_BLOCK_3 with block size of  169
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.40404040404040403 of frames with block size of 169
+through put (bps): 99717.33333333333
+COLOR_BLOCK_3 with block size of  196
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.40404040404040403 of frames with block size of 196
+through put (bps): 85112.24242424242
+COLOR_BLOCK_3 with block size of  225
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.40404040404040403 of frames with block size of 225
+through put (bps): 75418.90909090909
+COLOR_BLOCK_3 with block size of  256
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.9797979797979798 of frames with block size of 256
+through put (bps): 65941.09090909091
+COLOR_BLOCK_3 with block size of  289
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.41414141414141414 of frames with block size of 289
+through put (bps): 58571.15151515152
+COLOR_BLOCK_3 with block size of  324
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.47474747474747475 of frames with block size of 324
+through put (bps): 51726.78787878787
+COLOR_BLOCK_3 with block size of  361
+ffmpeg encoding
+ffmpeg decoding
+
+perfectly recovered 0.6262626262626263 of frames with block size of 361
+through put (bps): 46380.60606060606
