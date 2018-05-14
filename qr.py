@@ -129,6 +129,8 @@ class SimpleCode(BlockCode):
 
     def get_code_array(self, msg):
         '''convert binary string to code array'''
+        if len(msg) < self.frame_capacity:
+            msg += '0' * (self.frame_capacity - len(msg))
         assert len(msg) == self.frame_capacity
         msg = [int(x) for x in msg]
         msg = np.array(msg).reshape(self.array_size)
@@ -550,4 +552,4 @@ def param_sweep(param_dict, outfile):
 
 
 param_sweep(simple_params, 'sweep_simple.txt')
-# param_sweep(qr_params, 'sweep_qr.txt')
+param_sweep(qr_params, 'sweep_qr.txt')
