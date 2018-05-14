@@ -6,7 +6,6 @@ import random
 import numpy as np
 import itertools
 import subprocess
-from tqdm import tqdm
 from PIL import Image
 from functools import partial
 from multiprocessing import Pool, Manager
@@ -383,7 +382,10 @@ def _decode_sync(emb, emb_sync, inputs):
     return pid, packets
 
 
-def _multiprocess(worker, inputs, info=''):
+def _multiprocess(worker, inputs, info='', multi=False):
+    if not multi:
+        return [worker((x, None)) for x in inputs]
+
     total_size = len(inputs)
     output = '\r[{0}] done: {1}/{2}'
     pool = Pool(8)
@@ -552,4 +554,4 @@ def param_sweep(param_dict, outfile):
 
 
 param_sweep(simple_params, 'sweep_simple.txt')
-param_sweep(qr_params, 'sweep_qr.txt')
+# param_sweep(qr_params, 'sweep_qr.txt')
