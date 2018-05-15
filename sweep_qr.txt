@@ -1,6 +1,3 @@
-
-
-
 {"params": {"depth": 1, "channels": [], "color_space": "RGB", "alpha": 1, "version": 10}, "recovery_rate": 1.0, "throughput": 0.22499999999999998}
 {"params": {"depth": 1, "channels": [], "color_space": "RGB", "alpha": 1, "version": 20}, "recovery_rate": 1.0, "throughput": 0.75}
 {"params": {"depth": 1, "channels": [], "color_space": "RGB", "alpha": 1, "version": 30}, "recovery_rate": 1.0, "throughput": 1.5374999999999992}
