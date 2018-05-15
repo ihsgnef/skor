@@ -14,9 +14,11 @@ from pyzbar.pyzbar import decode as qr_decode
 
 from util import get_qr_packet_size, get_qr_array_size
 
-frames_dir = 'frames'
-encoded_dir = 'encoded_frames'
-decoded_dir = 'decoded_frames'
+video_dir = 'data/rms.webm'
+temp_vid_dir = 'data/temp.webm'
+frames_dir = 'data/frames'
+encoded_dir = 'data/encoded_frames'
+decoded_dir = 'data/decoded_frames'
 
 # putting these in global because I don't want to pass them around
 frame_size = (600, 800)
@@ -411,17 +413,17 @@ def main(emb, emb_sync, video=False):
         print('generating initial frames')
         subprocess.call([
             'ffmpeg',
-            '-i', 'rms.webm',
+            '-i', video_dir,
             '-vf', 'scale=800:600',
             os.path.join(frames_dir, 'image-%04d.png')
             ])
 
-    subprocess.call(['rm', 'temp.webm'],
+    subprocess.call(['rm', temp_vid_dir],
                     stdout=FNULL, stderr=subprocess.STDOUT)
     if os.path.isdir(encoded_dir):
-        subprocess.call(['rm', '-r', 'encoded_frames'])
+        subprocess.call(['rm', '-r', encoded_dir])
     if os.path.isdir(decoded_dir):
-        subprocess.call(['rm', '-r', 'decoded_frames'])
+        subprocess.call(['rm', '-r', decoded_dir])
 
     os.makedirs(encoded_dir, exist_ok=True)
     os.makedirs(decoded_dir, exist_ok=True)
@@ -447,14 +449,14 @@ def main(emb, emb_sync, video=False):
            'ffmpeg', '-i',
            os.path.join(encoded_dir, 'image-%04d.png'),
            '-c:v', 'libvpx',
-           'temp.webm'
+           temp_vid_dir
            ],
            stdout=FNULL, stderr=subprocess.STDOUT)
 
         print('ffmpeg decoding')
         subprocess.call([
             'ffmpeg', '-i',
-            'temp.webm',
+            temp_vid_dir,
             '-vf', 'scale=800:600',
             os.path.join(decoded_dir, 'image-%04d.png')
             ],
