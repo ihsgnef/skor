@@ -1,0 +1,243 @@
+
+
+
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 1}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.9994047619047619, "throughput": 0.699583333333333}
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.9970238095238095, "throughput": 0.6979166666666664}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 1}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.9732142857142857, "throughput": 0.6812499999999998}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.4089285714285714, "throughput": 0.28625}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.24642857142857144, "throughput": 0.17250000000000001}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 1.0, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.9994047619047619, "throughput": 0.699583333333333}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.40922619047619047, "throughput": 0.5729166666666665}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.06726190476190476, "throughput": 0.09416666666666668}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.06666666666666667, "throughput": 0.09333333333333332}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.4994047619047619, "throughput": 0.6991666666666664}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.3333333333333333, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.22797619047619047, "throughput": 0.47875000000000006}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.044642857142857144, "throughput": 0.09375}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.044444444444444446, "throughput": 0.09333333333333332}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.3333333333333333, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.3333333333333333, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.33214285714285713, "throughput": 0.6974999999999997}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.33075396825396824, "throughput": 0.694583333333333}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.4303571428571429, "throughput": 0.6025000000000001}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.08571428571428572, "throughput": 0.12000000000000002}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0675595238095238, "throughput": 0.09458333333333334}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.49970238095238095, "throughput": 0.699583333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.5, "throughput": 0.6999999999999996}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.4863095238095238, "throughput": 0.6808333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.3235119047619048, "throughput": 0.45291666666666663}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.04196428571428571, "throughput": 0.058750000000000004}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.00029761904761904765, "throughput": 0.0004166666666666667}
+{"params": {"block_size": 8, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.0017857142857142857, "throughput": 0.0025}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.026488095238095238, "throughput": 0.03708333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.017857142857142856, "throughput": 0.025}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.016666666666666666, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.016666666666666666, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.49970238095238095, "throughput": 0.699583333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.4880952380952381, "throughput": 0.6833333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.3273809523809524, "throughput": 0.4583333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.04404761904761905, "throughput": 0.061666666666666654}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.025148809523809525, "throughput": 0.07041666666666667}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.010714285714285714, "throughput": 0.029999999999999995}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.1675595238095238, "throughput": 0.4691666666666667}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.09449404761904762, "throughput": 0.2645833333333334}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.051488095238095236, "throughput": 0.14416666666666664}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.010565476190476191, "throughput": 0.029583333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.02132936507936508, "throughput": 0.08958333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.008035714285714285, "throughput": 0.033749999999999995}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.005555555555555556, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.005555555555555556, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.0007936507936507937, "throughput": 0.003333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.006746031746031746, "throughput": 0.028333333333333332}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.0005952380952380953, "throughput": 0.0025}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.01830357142857143, "throughput": 0.051250000000000004}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.00014880952380952382, "throughput": 0.0004166666666666667}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.022321428571428572, "throughput": 0.06249999999999999}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.030654761904761903, "throughput": 0.08583333333333333}
+{"params": {"block_size": 8, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.01011904761904762, "throughput": 0.02833333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.00744047619047619, "throughput": 0.020833333333333332}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0011904761904761906, "throughput": 0.0033333333333333335}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.008333333333333333, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.004166666666666667, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.002380952380952381, "throughput": 0.013333333333333334}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.0009672619047619048, "throughput": 0.005416666666666667}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.0026785714285714286, "throughput": 0.022500000000000003}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.001884920634920635, "throughput": 0.01583333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.0006448412698412698, "throughput": 0.005416666666666667}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.004166666666666667, "throughput": 0.02333333333333333}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.0040178571428571425, "throughput": 0.022500000000000003}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.002232142857142857, "throughput": 0.0125}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 7.440476190476191e-05, "throughput": 0.0004166666666666667}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 8, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 1}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.8981481481481481, "throughput": 0.4041666666666667}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.987037037037037, "throughput": 0.44416666666666654}
+{"params": {"block_size": 10, "depth": 1, "channels": [], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.8861111111111111, "throughput": 0.39874999999999994}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.8055555555555556, "throughput": 0.3625}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.6296296296296297, "throughput": 0.28333333333333327}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.42407407407407405, "throughput": 0.1908333333333334}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.23981481481481481, "throughput": 0.10791666666666665}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 1.0, "throughput": 0.4499999999999998}
+{"params": {"block_size": 10, "depth": 1, "channels": [0], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.9166666666666666, "throughput": 0.4125}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.575462962962963, "throughput": 0.5179166666666666}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.3731481481481482, "throughput": 0.33583333333333326}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.2074074074074074, "throughput": 0.18666666666666668}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.09583333333333334, "throughput": 0.08625000000000001}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.5166666666666667, "throughput": 0.46499999999999975}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.5166666666666667, "throughput": 0.46499999999999975}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.513425925925926, "throughput": 0.4620833333333332}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.44351851851851853, "throughput": 0.3991666666666666}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.3506172839506173, "throughput": 0.4733333333333334}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.21388888888888888, "throughput": 0.28875000000000006}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.12530864197530864, "throughput": 0.16916666666666674}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0808641975308642, "throughput": 0.10916666666666666}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.3311728395061728, "throughput": 0.44708333333333333}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.3314814814814815, "throughput": 0.4475}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.31450617283950616, "throughput": 0.4245833333333334}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.21419753086419754, "throughput": 0.2891666666666667}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.26435185185185184, "throughput": 0.23791666666666667}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.19490740740740742, "throughput": 0.1754166666666667}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.10555555555555556, "throughput": 0.095}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.04953703703703704, "throughput": 0.04458333333333333}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.5421296296296296, "throughput": 0.48791666666666644}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.5425925925925926, "throughput": 0.48833333333333323}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.524074074074074, "throughput": 0.47166666666666673}
+{"params": {"block_size": 10, "depth": 1, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.4425925925925926, "throughput": 0.3983333333333333}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.34074074074074073, "throughput": 0.3066666666666667}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.2569444444444444, "throughput": 0.23125000000000004}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.14722222222222223, "throughput": 0.1325}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.05, "throughput": 0.045}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.4837962962962963, "throughput": 0.4354166666666666}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.3486111111111111, "throughput": 0.31375000000000003}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.1037037037037037, "throughput": 0.09333333333333334}
+{"params": {"block_size": 10, "depth": 2, "channels": [], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.03333333333333333, "throughput": 0.029999999999999995}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.033796296296296297, "throughput": 0.030416666666666665}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.03333333333333333, "throughput": 0.030000000000000002}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.03333333333333333, "throughput": 0.030000000000000002}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.03333333333333333, "throughput": 0.030000000000000002}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.35, "throughput": 0.31500000000000006}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.2726851851851852, "throughput": 0.24541666666666676}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.1439814814814815, "throughput": 0.1295833333333333}
+{"params": {"block_size": 10, "depth": 2, "channels": [0], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.04953703703703704, "throughput": 0.04458333333333333}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.04189814814814815, "throughput": 0.07541666666666667}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.03611111111111111, "throughput": 0.065}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.033796296296296297, "throughput": 0.06083333333333333}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.03333333333333333, "throughput": 0.060000000000000005}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.11296296296296296, "throughput": 0.2033333333333333}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.08194444444444444, "throughput": 0.14750000000000002}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.05555555555555555, "throughput": 0.10000000000000003}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.028009259259259258, "throughput": 0.050416666666666665}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.04182098765432099, "throughput": 0.11291666666666668}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.03564814814814815, "throughput": 0.09625000000000002}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.03364197530864198, "throughput": 0.09083333333333335}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.033179012345679014, "throughput": 0.08958333333333333}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.036882716049382716, "throughput": 0.09958333333333337}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.03966049382716049, "throughput": 0.10708333333333338}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.03441358024691358, "throughput": 0.09291666666666668}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.017746913580246913, "throughput": 0.047916666666666656}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.03356481481481482, "throughput": 0.06041666666666667}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.03333333333333333, "throughput": 0.060000000000000005}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.03333333333333333, "throughput": 0.060000000000000005}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.03333333333333333, "throughput": 0.060000000000000005}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.06736111111111111, "throughput": 0.12124999999999998}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.06736111111111111, "throughput": 0.12125}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.05277777777777778, "throughput": 0.09500000000000003}
+{"params": {"block_size": 10, "depth": 2, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.028703703703703703, "throughput": 0.051666666666666666}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.041666666666666664, "throughput": 0.07500000000000002}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.037037037037037035, "throughput": 0.06666666666666667}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.03449074074074074, "throughput": 0.06208333333333333}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.03356481481481482, "throughput": 0.06041666666666667}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.020833333333333332, "throughput": 0.0375}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.011111111111111112, "throughput": 0.019999999999999997}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.005092592592592593, "throughput": 0.009166666666666667}
+{"params": {"block_size": 10, "depth": 4, "channels": [], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.002777777777777778, "throughput": 0.005000000000000001}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.011574074074074073, "throughput": 0.020833333333333332}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.008796296296296297, "throughput": 0.01583333333333333}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.011574074074074073, "throughput": 0.020833333333333332}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0032407407407407406, "throughput": 0.005833333333333333}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.04236111111111111, "throughput": 0.07625}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.03611111111111111, "throughput": 0.065}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.03449074074074074, "throughput": 0.06208333333333333}
+{"params": {"block_size": 10, "depth": 4, "channels": [0], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.03333333333333333, "throughput": 0.060000000000000005}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.007175925925925926, "throughput": 0.02583333333333333}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.0042824074074074075, "throughput": 0.015416666666666667}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.002777777777777778, "throughput": 0.01}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0020833333333333333, "throughput": 0.007500000000000001}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.00625, "throughput": 0.022499999999999996}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.007175925925925926, "throughput": 0.025833333333333333}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.007407407407407408, "throughput": 0.026666666666666665}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.005208333333333333, "throughput": 0.01875}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.006790123456790123, "throughput": 0.03666666666666666}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.0023919753086419754, "throughput": 0.012916666666666667}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.0015432098765432098, "throughput": 0.008333333333333333}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.0011574074074074073, "throughput": 0.00625}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0016975308641975309, "throughput": 0.009166666666666667}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.0023919753086419754, "throughput": 0.012916666666666668}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.001388888888888889, "throughput": 0.007500000000000001}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.0011574074074074073, "throughput": 0.006250000000000001}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 1}, "recovery_rate": 0.005439814814814815, "throughput": 0.019583333333333335}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8}, "recovery_rate": 0.002199074074074074, "throughput": 0.007916666666666666}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6}, "recovery_rate": 0.0020833333333333333, "throughput": 0.007500000000000001}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4}, "recovery_rate": 0.001388888888888889, "throughput": 0.005}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1}, "recovery_rate": 0.0060185185185185185, "throughput": 0.021666666666666667}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8}, "recovery_rate": 0.006828703703703704, "throughput": 0.024583333333333332}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6}, "recovery_rate": 0.006481481481481481, "throughput": 0.023333333333333327}
+{"params": {"block_size": 10, "depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4}, "recovery_rate": 0.004398148148148148, "throughput": 0.01583333333333333}

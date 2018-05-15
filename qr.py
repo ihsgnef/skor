@@ -519,7 +519,7 @@ qr_params = {
     }
 
 
-def param_sweep(param_dict, outfile):
+def param_sweep(param_dict, outfile, qr_not_simple=False):
     results = open(outfile, 'w')
     results.write('\n\n\n')
     all_params = list(itertools.product(*param_dict.values()))
@@ -532,7 +532,10 @@ def param_sweep(param_dict, outfile):
         m = int((eta - 3600 * h) // 60)
         print('{} / {}, {}:{}:{}'.format(i, len(all_params), h, m, 0))
         print(params)
-        emb = SimpleCode(**params)
+        if qr_not_simple:
+            emb = QRCode(**params)
+        else:
+            emb = SimpleCode(**params)
         emb_sync = QRCode(
                 tlx=0, tly=600, max_code_size=200,
                 depth=1, color_space='RGB', channels=[],
@@ -551,5 +554,5 @@ def param_sweep(param_dict, outfile):
 # print('avg. through put (kB per frame)', tp)
 
 
-param_sweep(simple_params, 'sweep_simple.txt')
-param_sweep(qr_params, 'sweep_qr.txt')
+# param_sweep(simple_params, 'sweep_simple.txt')
+param_sweep(qr_params, 'sweep_qr.txt', qr_not_simple=True)
