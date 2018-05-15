@@ -335,3 +335,29 @@
 {"params": {"depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
 {"params": {"depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.6, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
 {"params": {"depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4, "version": 10}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 1, 2], "color_space": "YCbCr", "alpha": 0.4, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 1, "version": 10}, "recovery_rate": 0.004166666666666667, "throughput": 0.0075}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 1, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 1, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8, "version": 10}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.8, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6, "version": 10}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.6, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4, "version": 10}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "RGB", "alpha": 0.4, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1, "version": 10}, "recovery_rate": 0.008333333333333333, "throughput": 0.015}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 1, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8, "version": 10}, "recovery_rate": 0.008333333333333333, "throughput": 0.015}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.8, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6, "version": 10}, "recovery_rate": 0.004166666666666667, "throughput": 0.0075}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.6, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4, "version": 10}, "recovery_rate": 0.004166666666666667, "throughput": 0.0075}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4, "version": 20}, "recovery_rate": 0.0, "throughput": 0.0}
+{"params": {"depth": 4, "channels": [0, 2], "color_space": "YCbCr", "alpha": 0.4, "version": 30}, "recovery_rate": 0.0, "throughput": 0.0}
