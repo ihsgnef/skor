@@ -1,0 +1,79 @@
+qr_rate = {
+    'depth': [1],
+    'channels': [[]],
+    'color_space': ['RGB'],
+    'alpha': [1],
+    'version': [25]
+    }
+    585/3063
+
+    25*585*300/8000 = 548/128 = 4.28kb/s
+
+qr_rate = {
+    'depth': [1],
+    'channels': [[]],
+    'color_space': ['RGB'],
+    'alpha': [1],
+    'version': [20]
+    }
+    571/3063
+
+    20*571*300/8000 = 428 /128 = 3.3kb/s
+
+    571*100*30
+
+simple_rate = {
+    'block_size': [8],
+    'depth': [1],
+    'channels': [[]],
+    'color_space': ['RGB'],
+    'alpha': [1]
+    }
+    13440/42896
+
+simple_rate = {
+    'block_size': [4],
+    'depth': [1],
+    'channels': [[]],
+    'color_space': ['RGB'],
+    'alpha': [1]
+    }
+    19350/172350
+
+simple_rate = {
+    'block_size': [4],
+    'depth': [1],
+    'channels': [[]],
+    'color_space': ['RGB'],
+    'alpha': [.6]
+    }
+    25650/172350
+
+simple_rate_2 = {
+    'block_size': [4],
+    'depth': [1],
+    'channels': [0],
+    'color_space': ['YCbCr'],
+    'alpha': [1]
+    }
+    17550/172350
+
+simple_rate = {
+    'block_size': [4],
+    'depth': [1],
+    'channels': [[]],
+    'color_space': ['RGB'],
+    'alpha': [.4]
+    }
+    33075/172350
+
+    *100/8000/30 -> kb/s
+
+
+    Color Space	Block Size	Alpha	Throughput(kb/s)	Framerate(fps)
+    RGB	8	1	5.6	8
+    RGB	4	1	8.0623	2.87
+    RGB	4	0.6	10.6875	3.8
+    RGB	4	0.4	13.78125	4.9
+    RGB	4	0.2	0	4.9
+    YCbCr	4	1	7.3125	2.6
